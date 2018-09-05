@@ -1,4 +1,5 @@
 <template>
+    <!--交易(下)->委托纪录-->
     <div class="m-exchange__openorder">
         <div v-if="disabled" class="m-exchange__openorder__head">
             <div class="m-exchange__openorder__head-caption">
@@ -148,7 +149,7 @@
 </template>
 
 <style rel="stylesheet/scss" lang="scss">
-    @import "src/assets/css/mc/config.scss";
+    @import "src/assets/css/mc/_config.scss";
 
     .m-exchange__openorder {
         margin-top: $m--space;

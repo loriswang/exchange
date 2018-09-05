@@ -1,5 +1,5 @@
 <template>
-
+    <!--交易->币兑种类选择(侧导航)-->
     <div class="m-exchange__drawer">
         <div class="m-exchange__drawer__head">
             <div class="m-exchange__drawer__head-caption">
@@ -10,7 +10,7 @@
             <div class="m-exchange__drawer__head-tools">
                 <ul class="m-exchange__drawer__head__nav">
                     <li class="m-exchange__drawer__head__nav-item">
-                        <span class="m-exchange__drawer__head__nav-link m-exchange__drawer__head__nav-link-icon">
+                        <span @click="this.upHandleClick" class="m-exchange__drawer__head__nav-link m-exchange__drawer__head__nav-link-icon">
                             <i class="mcicon-category"></i>
                         </span>
                     </li>
@@ -186,7 +186,7 @@
 </style>
 
 <script>
-    import { Tab, TabItem } from 'vux'
+    import {Tab, TabItem} from 'vux'
 
     export default {
         name: 'exchange-drawer',
@@ -194,7 +194,7 @@
             disabled: Boolean
         },
 
-        data () {
+        data() {
             return {
                 demo1: 1,
                 tickerList: ['FBC'],
@@ -202,10 +202,13 @@
                 tab_index: 0
             }
         },
-        created () {
+        created() {
         },
         methods: {
-            onItemClick (index) {
+            upHandleClick() {
+                this.$emit('upParents', event)
+            },
+            onItemClick(index) {
             }
         },
 

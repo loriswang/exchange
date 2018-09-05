@@ -1,4 +1,5 @@
 <template>
+    <!--交易 -> 当前委托(全部) -> 历史订单 -> 详情-->
     <div class="m-exchange__historyordershowpage">
         <x-header title="交易详情" :left-options="{backText: ''}">
         </x-header>
@@ -7,22 +8,20 @@
             <div class="m-exchange__historyordershow-head">
                 <div class="m-exchange__historyordershow-head-caption">
                     <div class="m-exchange__historyordershow-head-title">
-                    <span class="m-badge m-badge--danger m-badge--wide">
-                        卖出
-                    </span>
-                    <span>
-                        FBC/BTC
-                    </span>
+                        <span class="m-badge m-badge--danger m-badge--wide">
+                            卖出
+                        </span>
+                        <span>
+                            FBC/BTC
+                        </span>
                     </div>
                     <div class="m-exchange__historyordershow-head-desc">
                         成交(100%)
                         <span class="m--font-warning">
-                    撤单
-                </span>
+                            撤单
+                        </span>
                     </div>
-
                 </div>
-
             </div>
             <div class="m-exchange__historyordershow-body">
                 <div class="m-exchange__historyordershow-body-item">

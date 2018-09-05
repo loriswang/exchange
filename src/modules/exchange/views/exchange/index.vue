@@ -1,20 +1,21 @@
 <template>
+    <!--交易(tab页面) -->
     <div style="height:100%;">
         <drawer
-            :show.sync="drawerVisibility"
-            :show-mode="showModeValue"
-            :placement="showPlacementValue"
-            :drawer-style="{ width: '280px' }">
+                :show.sync="drawerVisibility"
+                :show-mode="showModeValue"
+                :placement="showPlacementValue"
+                :drawer-style="{ width: '280px' }">
 
             <div slot="drawer">
-                <exchange-drawer></exchange-drawer>
+                <exchange-drawer @upParents="handleToggleSliderNav"></exchange-drawer>
             </div>
 
             <div>
                 <div class="m-exchange">
                     <x-header class="m-exchange__header" title="" :left-options="{backText: ''}">
                      <span class="m-exchange__tools" slot="overwrite-left"
-                           @click="drawerVisibility = !drawerVisibility">
+                           @click="handleToggleSliderNav">
                           <span class="m-exchange__tools-icon" slot="icon">
                               <i class="mcicon-category"></i>
                           </span>
@@ -138,17 +139,17 @@
                             </div>
 
                             <NumberInput
-                                :min="0"
-                                :max="10"
-                                :controls=0
-                                :integerOnly="true"
+                                    :min="0"
+                                    :max="10"
+                                    :controls=0
+                                    :integerOnly="true"
                             />
 
                             <NumberInput
-                                :min="0"
-                                :max="10"
-                                :controls=1
-                                :integerOnly="true"
+                                    :min="0"
+                                    :max="10"
+                                    :controls=1
+                                    :integerOnly="true"
                             />
 
                             <div class="m-exchange__tradepanel-available">
@@ -170,7 +171,8 @@
                             </div>
 
                             <x-button class="btn_base"
-                                      :class="{ btn_primary : tab_index===0, btn_danger : tab_index===1 }" link="##">买入FBC
+                                      :class="{ btn_primary : tab_index===0, btn_danger : tab_index===1 }" link="##">
+                                买入FBC
                             </x-button>
                         </div>
                     </div>
@@ -402,8 +404,6 @@
                     }
                 }
 
-
-
             }
 
         }
@@ -411,14 +411,14 @@
 </style>
 
 <script>
-    import { TransferDom, XHeader, XButton, Group, Cell, Tab, TabItem, Drawer } from 'vux'
+    import {TransferDom, XHeader, XButton, Group, Cell, Tab, TabItem, Drawer} from 'vux'
     import NumberInput from '@/components/NumberInput/NumberInput'
     import OpenOrders from './components/OpenOrders/OpenOrders.vue'
     import ExchangeDrawer from './components/ExchangeDrawer/ExchangeDrawer.vue'
 
     export default {
         name: 'Home',
-        data () {
+        data() {
             return {
                 tab_index: 0,
                 exchangeMenu: ['买入', '卖出'],
@@ -430,10 +430,13 @@
                 showPlacementValue: 'left'
             }
         },
-        created () {
+        created() {
         },
         methods: {
-            onItemClick (index) {
+            handleToggleSliderNav() {
+                this.drawerVisibility = !this.drawerVisibility
+            },
+            onItemClick(index) {
                 if (this.tab_index === index) return
                 this.tab_index = index
                 console.log(index)
