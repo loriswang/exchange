@@ -2,7 +2,16 @@ import http from '@/utils/http'
 
 export function test () {
     return http({
-        url: '/api/env',
+        // url: '/api/env',
+        url: '/user/userToken',
+        method: 'get'
+    })
+}
+// 获取token
+
+export function ajaxToken () {
+    return http({
+        url: '/user/userToken',
         method: 'get'
     })
 }

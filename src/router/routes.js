@@ -1,5 +1,6 @@
 
 const Test = r => require.ensure([], () => r(require('@/modules/user/views/home/test')), 'test')
+const Verification = r => require.ensure([], () => r(require('@/modules/user/views/home/verification')), 'verification')
 const Layout = r => require.ensure([], () => r(require('@/modules/user/views/layout/layout')), 'layout')
 const LoginLayout = r => require.ensure([], () => r(require('@/modules/user/views/layout/loginLayout')), 'loginLayout')
 const HomeIndex = r => require.ensure([], () => r(require('@/modules/user/views/home/index')), 'home')
@@ -29,6 +30,14 @@ const routes = [
         component: Test,
         meta: {
             title: 'test'
+        }
+    },
+    {
+        path: '/verification',
+        name: 'Verification',
+        component: Verification,
+        meta: {
+            title: 'Verification'
         }
     },
     {
