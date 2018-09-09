@@ -2,33 +2,42 @@
     <div>verification</div>
 </template>
 <script type="text/ecmascript-6">
-    import cookie from '../../../../../src/utils/isCookie'
+    import cookie from 'js-cookie'
     import parseURl from '@/utils/parseUrl'
-    import {ajaxToken} from '@/modules/user/api/get_user'
-    let tokens = 'access_token'
-//    let key
-    let val
-    let timer
-//    const adrs = 'www.u.com/home?id=2&type=0&dtype=-1'
-    const adrs = window.location.href
-//    let refresh = null
+    import { ajaxToken, getUserInfo } from '@/modules/user/api/get_user'
+    import { mapActions } from 'vuex'
+    const tokens = 'access_token'
+    const adrs = 'www.u.com/home?id=2&type=0&dtype=-1'
+//    const adrs = window.location.href
     export default {
         name: 'Verification',
         data() {
-            return {}
+            return {
+                token: '',
+                timer: {
+                    type: Number
+                }
+            }
         },
         created() {
             this.readCookie(tokens)
             this.parseURL()
         },
         methods: {
+            ...mapActions({
+                setToken: 'setToken',
+                setEmail: 'setEmail',
+                setMobile: 'setMobile'
+            }),
             //            查询cookie是否保存token
             readCookie(tokens) {
-                if (cookie.get(tokens) === undefined || cookie.get(tokens) === '') {
-                    this.ajaxToken()    // 没有=>请求token
+                this.token = cookie.get(tokens)
+                if (this.token === undefined || this.token === '') {
+                    // 没有=>请求token
+                    this.ajaxToken()
                 } else {
 //                    有 => 验证token
-                    this.getUserData()
+                    this.getUserData(this.token)
                 }
             },
             // ajax请求获取token => 保存token => 请求用户数据
@@ -37,9 +46,10 @@
                     const res = response
                     if (res.status === 200) {
                         let data = response.data
-                        val = data.access_token
-                        timer = data.expires_in
-                        this.saveCookie(tokens, val, timer)
+                        this.token = data.access_token
+                        this.timer = data.expires_in
+                        this.saveCookie(tokens, this.token, this.timer)
+                        this.getUserData(this.token)
                     }
                 })
             },
@@ -49,12 +59,22 @@
             },
             // 保存到cookie
             saveCookie (key, val, time) {
-                cookie.set(key, val, time)
+                const timer = time / 1000 / 3600 / 24
+                cookie.set(key, val, { expires: timer })
             },
             //            base64解密
-            //            token请求用户数据
-            getUserData () {
+            //            保存token到vuex, token请求用户数据
+            getUserData (token) {
+                this.setToken(token)
                 console.log('请求用户数据')
+                getUserInfo().then(response => {
+                    const res = response.data
+//                    console.log(typeof res.code)
+                    if (res.code === '200') {
+                        this.setEmail(res.data.email)
+                        this.setMobile(res.data.mobile)
+                    }
+                })
             }
         }
 

@@ -6,11 +6,11 @@
         <div class="m-accountshow__detail">
             <div class="m-accountshow__detail__head">
                 <div class="m-accountshow__detail__head-icon">
-                    <img src="~@/assets/img/currency/btc.png">
+                    <img :src="this.item.src">
                 </div>
                 <div class="m-accountshow__detail__head-caption">
-                    <span class="m-accountshow__detail__head-title">BTC</span>
-                    <span class="m-accountshow__detail__head-desc">Bitcoin</span>
+                    <span class="m-accountshow__detail__head-title">{{this.item.currency}}</span>
+                    <span class="m-accountshow__detail__head-desc">{{this.item.fullName}}</span>
                 </div>
             </div>
             <div class="m-accountshow__detail__body">
@@ -19,7 +19,7 @@
                         总额
                     </div>
                     <div class="m-accountshow__detail__body-item-r">
-                        1212
+                        {{this.item.available}}
                     </div>
                 </div>
                 <div class="m-accountshow__detail__body-item">
@@ -27,7 +27,7 @@
                         可用余额
                     </div>
                     <div class="m-accountshow__detail__body-item-r">
-                        1
+                        {{this.item.balance}}
                     </div>
                 </div>
                 <div class="m-accountshow__detail__body-item">
@@ -35,7 +35,7 @@
                         冻结资产
                     </div>
                     <div class="m-accountshow__detail__body-item-r">
-                        0
+                        {{this.item.frozen}}
                     </div>
                 </div>
             </div>
@@ -64,10 +64,10 @@
                 <x-button class="btn_base btn_primary" link="/account/show/deposit">充币
                 </x-button>
             </div>
-            <div class="m-accountshow__action__r">
-                <x-button class="btn_base btn_danger" link="/account/show/withdraw">提币
-                </x-button>
-            </div>
+            <!--<div class="m-accountshow__action__r">-->
+            <!--<x-button class="btn_base btn_danger" link="/account/show/withdraw">提币-->
+            <!--</x-button>-->
+            <!--</div>-->
         </div>
     </div>
 </template>
@@ -170,10 +170,10 @@
             display: flex;
             padding: 0 $m--space;
 
-            .m-accountshow__action__r{
+            .m-accountshow__action__r {
                 flex: 1;
             }
-            .m-accountshow__action__l{
+            .m-accountshow__action__l {
                 flex: 1;
             }
         }
@@ -182,18 +182,27 @@
 </style>
 
 <script>
-    import { XHeader, Group, Cell, XButton } from 'vux'
+    import {XHeader, Group, Cell, XButton} from 'vux'
 
     export default {
         name: 'User',
-        data () {
+        data() {
             return {
-                imgList: []
+                imgList: [],
+                item: this.$route.query.item
             }
         },
-        created () {
+        props: [
+            'key'
+        ],
+        created() {
+            this.test()
         },
-        methods: {},
+        methods: {
+            test() {
+                console.log(this.item)
+            }
+        },
 
         components: {
             Group,

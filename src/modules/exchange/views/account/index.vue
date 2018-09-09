@@ -22,71 +22,33 @@
             </div>
         </group>
 
-        <group class="m-account__list">
-            <cell is-link link="/account/show">
-                <div slot="title">
-                    <span class="m-account__list_code">FBC</span>
-                    <span class="m-account__list-name">(Fortune Coin)</span>
-                </div>
-                <span slot="icon" class="m-account__list-icon">
-                    <img src="~@/assets/img/currency/fbc.png">
+        <group class="m-account__list" v-if="this.assetsList">
+            <cell @click.native="getDescribe(item)" :key="activeDate" v-for="item in this.assetsList" :key="item.currency">
+                    <div slot="title">
+                        <span class="m-account__list_code">{{item.currency}}</span>
+                        <span class="m-account__list-name">({{item.fullName}})</span>
+                    </div>
+                    <span slot="icon" class="m-account__list-icon">
+                    <img :src='item.src'>
                 </span>
-                <span class="m-account__list-total">
-                    1800000.00
-                </span>
-            </cell>
-
-            <cell is-link>
-                <div slot="title">
-                    <span class="m-account__list_code">BTC</span>
-                    <span class="m-account__list-name">(Bitcoin)</span>
-                </div>
-                <span slot="icon" class="m-account__list-icon">
-                    <img src="~@/assets/img/currency/btc.png">
-                </span>
-                <span class="m-account__list-total">
-                    1.500000
+                    <span class="m-account__list-total">
+                    {{item.available}}
                 </span>
             </cell>
 
-            <cell is-link>
-                <div slot="title">
-                    <span class="m-account__list_code">ETH</span>
-                    <span class="m-account__list-name">(Ethereum)</span>
-                </div>
-                <span slot="icon" class="m-account__list-icon">
-                    <img src="~@/assets/img/currency/eth.png">
-                </span>
-                <span class="m-account__list-total">
-                    0
-                </span>
-            </cell>
-
-            <!--<cell is-link>-->
-                <!--<div slot="title">-->
-                    <!--<span class="m-account__list_code">EOS</span>-->
-                    <!--<span class="m-account__list-name">(Eos)</span>-->
-                <!--</div>-->
-                <!--<span slot="icon" class="m-account__list-icon">-->
-                    <!--<img src="~@/assets/img/currency/eos.png">-->
-                <!--</span>-->
-                <!--<span class="m-account__list-total">-->
-                    <!--0-->
-                <!--</span>-->
+            <!--<cell is-link link="/account/show">-->
+            <!--<div slot="title">-->
+            <!--<span class="m-account__list_code">FBC</span>-->
+            <!--<span class="m-account__list-name">(Fortune Coin)</span>-->
+            <!--</div>-->
+            <!--<span slot="icon" class="m-account__list-icon">-->
+            <!--<img src="~@/assets/img/currency/fbc.png">-->
+            <!--</span>-->
+            <!--<span class="m-account__list-total">-->
+            <!--1800000.00-->
+            <!--</span>-->
             <!--</cell>-->
 
-            <cell is-link>
-                <div slot="title">
-                    <span class="m-account__list_code">USDT</span>
-                    <span class="m-account__list-name">(TetherUS)</span>
-                </div>
-                <span slot="icon" class="m-account__list-icon">
-                    <img src="~@/assets/img/currency/usdt.png">
-                </span>
-                <span class="m-account__list-total">
-                    0
-                </span>
-            </cell>
         </group>
 
     </div>
@@ -98,7 +60,7 @@
     .m-account {
 
         .weui-cell {
-            padding: 15px 15px!important;
+            padding: 15px 15px !important;
         }
 
         .weui-cells {
@@ -123,10 +85,10 @@
                 width: 100%;
                 /*line-height: 0;*/
                 padding: $m--space;
-                background: get-color(light, panel,'-');
+                background: get-color(light, panel, '-');
             }
 
-            .m-account__info-title{
+            .m-account__info-title {
                 font-size: get-font-size(regular);
                 color: get-color(light, muted);
                 display: block;
@@ -177,22 +139,83 @@
 </style>
 
 <script>
-    import { XHeader, Group, Cell } from 'vux'
+    import {XHeader, Group, Cell} from 'vux'
+    import {getAssets} from '@/modules/exchange/api/get_exchange'
+
+    const imgSrc = {
+        FBC: {
+            src: require('@/assets/img/currency/btc.png'),
+            fullName: 'Fortune Coin'
+        },
+        BTC: {
+            src: require('@/assets/img/currency/btc.png'),
+            fullName: 'Bitcoin'
+        },
+        ETH: {
+            src: require('@/assets/img/currency/eth.png'),
+            fullName: 'Ethereum'
+        },
+        EOS: {
+            src: require('@/assets/img/currency/eos.png'),
+            fullName: 'Eos'
+        },
+        USDT: {
+            src: require('@/assets/img/currency/usdt.png'),
+            fullName: 'TetherUS'
+        },
+        ZL: {
+            src: require('@/assets/img/currency/usdt.png'),
+            fullName: 'ZL'
+        }
+    }
 
     export default {
         name: 'User',
-        data () {
+        data() {
             return {
-                imgList: []
+                imgList: [],
+                assetsList: [],
+                activeDate: new Date()
             }
         },
-        created () {
+        created() {
+            this.getAssets()
         },
         methods: {
             linkFinance() {
-                this.$router.push({ path: '/finance' })
+                this.$router.push({path: '/finance'})
+            },
+            getDescribe(item) {
+                console.log('click')
+                this.$router.push({
+                    path: '/account/show',
+                    query: {
+                        item: item
+                    }
+                })
+            },
+            getAssets() {
+                getAssets().then((response) => {
+                    const res = response.data
+                    if (res.code === '200') {
+                        let data = this.addText(res.data)
+                        this.assetsList = data
+                    }
+                })
+            },
+            addText(data) {
+                const vdata = data
+                for (let i = 0; i < vdata.length; i++) {
+                    const currency = vdata[i].currency.toUpperCase()
+                    vdata[i].src = null
+                    vdata[i].FullName = null
+                    vdata[i].src = imgSrc[currency].src
+                    vdata[i].fullName = imgSrc[currency].fullName
+                }
+                return vdata
             }
         },
+        filters: {},
 
         components: {
             Group,
