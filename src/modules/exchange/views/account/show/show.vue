@@ -3,7 +3,7 @@
         <x-header title="我的资产" :left-options="{backText: ''}">
         </x-header>
 
-        <div class="m-accountshow__detail">
+        <div class="m-accountshow__detail" v-if="this.item">
             <div class="m-accountshow__detail__head">
                 <div class="m-accountshow__detail__head-icon">
                     <img :src="this.item.src">
@@ -189,18 +189,21 @@
         data() {
             return {
                 imgList: [],
-                item: this.$route.query.item
+                item: null
             }
         },
-        props: [
-            'key'
-        ],
         created() {
-            this.test()
+            this.setProps()
         },
         methods: {
-            test() {
-                console.log(this.item)
+            setProps() {
+                this.item = this.$route.query.item
+            }
+        },
+        watch: {
+            '$route' (to, from) {
+                console.log(this.$route.query.item)
+                this.setProps()
             }
         },
 

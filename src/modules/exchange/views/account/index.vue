@@ -23,7 +23,7 @@
         </group>
 
         <group class="m-account__list" v-if="this.assetsList">
-            <cell @click.native="getDescribe(item)" :key="activeDate" v-for="item in this.assetsList" :key="item.currency">
+            <cell @click.native="getDescribe(item)" v-for="item in this.assetsList" :key="item.currency">
                     <div slot="title">
                         <span class="m-account__list_code">{{item.currency}}</span>
                         <span class="m-account__list-name">({{item.fullName}})</span>
@@ -140,6 +140,7 @@
 
 <script>
     import {XHeader, Group, Cell} from 'vux'
+    import { mapActions } from 'vuex'
     import {getAssets} from '@/modules/exchange/api/get_exchange'
 
     const imgSrc = {
@@ -174,19 +175,21 @@
         data() {
             return {
                 imgList: [],
-                assetsList: [],
-                activeDate: new Date()
+                assetsList: []
             }
         },
         created() {
             this.getAssets()
         },
         methods: {
+            ...mapActions({
+                setAssets: 'setAssets'
+            }),
             linkFinance() {
                 this.$router.push({path: '/finance'})
             },
             getDescribe(item) {
-                console.log('click')
+//                console.log('click')
                 this.$router.push({
                     path: '/account/show',
                     query: {
@@ -200,6 +203,7 @@
                     if (res.code === '200') {
                         let data = this.addText(res.data)
                         this.assetsList = data
+                        this.setAssets(this.assetsList)
                     }
                 })
             },

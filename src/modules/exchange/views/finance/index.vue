@@ -6,89 +6,76 @@
         <div class="m-finance__list__body">
             <router-link to="/finance/show">
                 <div class="m-finance__list__body-item">
-                <div class="m-finance__list__body-item-1">
-
-                    <span class="m-finance__list__body-item-side m--font-success">转入
-                    </span>
-                    <span class="m-finance__list__body-item-desc">直充
-                    </span>
-                </div>
-                <div class="m-finance__list__body-item-2">
-                    <span class="m-finance__list__body-item-pair">
-                        FBC/BTC
-                    </span>
-                    <span class="m-finance__list__body-item-amount">
-                        2000
-                     </span>
-                </div>
-                <div class="m-finance__list__body-item-3">
-
-                    <span class="m-finance__list__body-item-status">
-                        成交
-                    </span>
-                    <span class="m-finance__list__body-item-date">
+                    <div class="m-finance__list__body-item-1">
+                        <span class="m-finance__list__body-item-side m--font-success">转入</span>
+                        <span class="m-finance__list__body-item-desc">直充</span>
+                    </div>
+                    <div class="m-finance__list__body-item-2">
+                        <span class="m-finance__list__body-item-pair">
+                            FBC/BTC
+                        </span>
+                        <span class="m-finance__list__body-item-amount">
+                            2000
+                        </span>
+                    </div>
+                    <div class="m-finance__list__body-item-3">
+                        <span class="m-finance__list__body-item-status">
+                            成交
+                        </span>
+                        <span class="m-finance__list__body-item-date">
                             2018-06-08 10:00:00
-                    </span>
+                        </span>
+                    </div>
                 </div>
-            </div>
             </router-link>
             <router-link to="/finance/show">
                 <div class="m-finance__list__body-item">
-                <div class="m-finance__list__body-item-1">
-
-                    <span class="m-finance__list__body-item-side m--font-success">转入
-                    </span>
-                    <span class="m-finance__list__body-item-desc">直充
-                    </span>
-                </div>
-                <div class="m-finance__list__body-item-2">
-                    <span class="m-finance__list__body-item-pair">
-                        FBC/BTC
-                    </span>
-                    <span class="m-finance__list__body-item-amount">
-                        2000
-                     </span>
-                </div>
-                <div class="m-finance__list__body-item-3">
-
-                    <span class="m-finance__list__body-item-status">
-                        成交
-                    </span>
-                    <span class="m-finance__list__body-item-date">
+                    <div class="m-finance__list__body-item-1">
+                        <span class="m-finance__list__body-item-side m--font-success">转入</span>
+                        <span class="m-finance__list__body-item-desc">直充</span>
+                    </div>
+                    <div class="m-finance__list__body-item-2">
+                        <span class="m-finance__list__body-item-pair">
+                            FBC/BTC
+                        </span>
+                        <span class="m-finance__list__body-item-amount">
+                            2000
+                        </span>
+                    </div>
+                    <div class="m-finance__list__body-item-3">
+                        <span class="m-finance__list__body-item-status">
+                            成交
+                        </span>
+                        <span class="m-finance__list__body-item-date">
                             2018-06-08 10:00:00
-                    </span>
+                        </span>
+                    </div>
                 </div>
-            </div>
             </router-link>
             <router-link to="/finance/show">
                 <div class="m-finance__list__body-item">
-                <div class="m-finance__list__body-item-1">
-
-                    <span class="m-finance__list__body-item-side m--font-danger">提币
-                    </span>
-                    <span class="m-finance__list__body-item-desc">直充
-                    </span>
-                </div>
-                <div class="m-finance__list__body-item-2">
-                    <span class="m-finance__list__body-item-pair">
-                        FBC/BTC
-                    </span>
-                    <span class="m-finance__list__body-item-amount">
-                        2000
-                     </span>
-                </div>
-                <div class="m-finance__list__body-item-3">
-
-                    <span class="m-finance__list__body-item-status">
-                        成交
-                    </span>
-                    <span class="m-finance__list__body-item-date">
+                    <div class="m-finance__list__body-item-1">
+                        <span class="m-finance__list__body-item-side m--font-danger">提币</span>
+                        <span class="m-finance__list__body-item-desc">直充</span>
+                    </div>
+                    <div class="m-finance__list__body-item-2">
+                        <span class="m-finance__list__body-item-pair">
+                            FBC/BTC
+                        </span>
+                        <span class="m-finance__list__body-item-amount">
+                            2000
+                        </span>
+                    </div>
+                    <div class="m-finance__list__body-item-3">
+                        <span class="m-finance__list__body-item-status">
+                            成交
+                        </span>
+                        <span class="m-finance__list__body-item-date">
                             2018-06-08 10:00:00
-                    </span>
+                        </span>
+                    </div>
                 </div>
-            </div>
             </router-link>
-
         </div>
     </div>
 </template>
@@ -128,8 +115,6 @@
                     text-align: right;
                 }
 
-
-
                 .m-finance__list__body-item-pair {
                     /*font-weight: get-font-weight(bolder);*/
                     display: inline-block;
@@ -155,7 +140,6 @@
                     /*color: get-color(light, muted);*/
                     display: inline-block;
                 }
-
 
                 .m-finance__list__body-item-date {
                     /*color: get-color(light, muted);*/
@@ -183,16 +167,16 @@
 </style>
 
 <script>
-    import { XHeader, Group, Cell } from 'vux'
+    import {XHeader, Group, Cell} from 'vux'
 
     export default {
         name: 'historyorders',
-        data () {
+        data() {
             return {
                 imgList: []
             }
         },
-        created () {
+        created() {
         },
         methods: {},
 

@@ -5,71 +5,88 @@
 const path = require('path')
 
 module.exports = {
-  dev: {
+    dev: {
 
-    // Paths
-    assetsSubDirectory: 'static',
-    assetsPublicPath: '/',
-    proxyTable: {},
+        // Paths
+        assetsSubDirectory: 'static',
+        assetsPublicPath: '/',
+        proxyTable: {
+            '/v1/oauth/token': {     //这里是公共部分，在调用接口时后面接不相同的部分，/api就相当于http://192.168.0.199:8926/api这一段
+                target: 'http://ddd.test',   //这里写的是访问接口的域名和端口号
+                changeOrigin: true, // 必须加上这个才能跨域请求
+                // pathRewrite: {  // 重命名
+                //   '^/api': '/'
+                // }
+            },
+            '/v1/user/user/show': {     //这里是公共部分，在调用接口时后面接不相同的部分，/api就相当于http://192.168.0.199:8926/api这一段
+                target: 'http://ddd.test',   //这里写的是访问接口的域名和端口号
+                changeOrigin: true // 必须加上这个才能跨域请求
+            },
+            '/v1/wallet/account/balance': {     //这里是公共部分，在调用接口时后面接不相同的部分，/api就相当于http://192.168.0.199:8926/api这一段
+                target: 'http://ddd.test',   //这里写的是访问接口的域名和端口号
+                changeOrigin: true // 必须加上这个才能跨域请求
+            },
+        },
 
-    // Various Dev Server settings
-    host: '0.0.0.0', // can be overwritten by process.env.HOST
-    port: 8088, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
-    autoOpenBrowser: false,
-    errorOverlay: true,
-    notifyOnErrors: true,
-    poll: true, // https://webpack.js.org/configuration/dev-server/#devserver-watchoptions-
-    // poll: false, // https://webpack.js.org/configuration/dev-server/#devserver-watchoptions-
+        // Various Dev Server settings
+        host: 'localhost', // can be overwritten by process.env.HOST
+        // host: '0.0.0.0', // can be overwritten by process.env.HOST
+        port: 8088, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
+        autoOpenBrowser: false,
+        errorOverlay: true,
+        notifyOnErrors: true,
+        poll: true, // https://webpack.js.org/configuration/dev-server/#devserver-watchoptions-
+        // poll: false, // https://webpack.js.org/configuration/dev-server/#devserver-watchoptions-
 
-    // Use Eslint Loader?
-    // If true, your code will be linted during bundling and
-    // linting errors and warnings will be shown in the console.
-    useEslint: true,
-    // If true, eslint errors and warnings will also be shown in the error overlay
-    // in the browser.
-    showEslintErrorsInOverlay: false,
+        // Use Eslint Loader?
+        // If true, your code will be linted during bundling and
+        // linting errors and warnings will be shown in the console.
+        useEslint: true,
+        // If true, eslint errors and warnings will also be shown in the error overlay
+        // in the browser.
+        showEslintErrorsInOverlay: false,
 
-    /**
-     * Source Maps
-     */
+        /**
+         * Source Maps
+         */
 
-    // https://webpack.js.org/configuration/devtool/#development
-    devtool: 'cheap-module-eval-source-map',
+        // https://webpack.js.org/configuration/devtool/#development
+        devtool: 'cheap-module-eval-source-map',
 
-    // If you have problems debugging vue-files in devtools,
-    // set this to false - it *may* help
-    // https://vue-loader.vuejs.org/en/options.html#cachebusting
-    cacheBusting: true,
+        // If you have problems debugging vue-files in devtools,
+        // set this to false - it *may* help
+        // https://vue-loader.vuejs.org/en/options.html#cachebusting
+        cacheBusting: true,
 
-    // CSS Sourcemaps off by default because relative paths are "buggy"
-    // with this option, according to the CSS-Loader README
-    // (https://github.com/webpack/css-loader#sourcemaps)
-    // In our experience, they generally work as expected,
-    // just be aware of this issue when enabling this option.
-    cssSourceMap: false,
-  },
+        // CSS Sourcemaps off by default because relative paths are "buggy"
+        // with this option, according to the CSS-Loader README
+        // (https://github.com/webpack/css-loader#sourcemaps)
+        // In our experience, they generally work as expected,
+        // just be aware of this issue when enabling this option.
+        cssSourceMap: false,
+    },
 
-  build: {
-    // Template for index.html
-    index: path.resolve(__dirname, '../dist/index.html'),
+    build: {
+        // Template for index.html
+        index: path.resolve(__dirname, '../dist/index.html'),
 
-    // Paths
-    assetsRoot: path.resolve(__dirname, '../dist'),
-    assetsSubDirectory: 'static',
-    assetsPublicPath: './',
+        // Paths
+        assetsRoot: path.resolve(__dirname, '../dist'),
+        assetsSubDirectory: 'static',
+        assetsPublicPath: './',
 
-    /**
-     * Source Maps
-     */
+        /**
+         * Source Maps
+         */
 
-    productionSourceMap: true,
-    // https://webpack.js.org/configuration/devtool/#production
-    devtool: '#source-map',
+        productionSourceMap: true,
+        // https://webpack.js.org/configuration/devtool/#production
+        devtool: '#source-map',
 
-    // Run the build command with an extra argument to
-    // View the bundle analyzer report after build finishes:
-    // `npm run build --report`
-    // Set to `true` or `false` to always turn it on or off
-    bundleAnalyzerReport: process.env.npm_config_report
-  }
+        // Run the build command with an extra argument to
+        // View the bundle analyzer report after build finishes:
+        // `npm run build --report`
+        // Set to `true` or `false` to always turn it on or off
+        bundleAnalyzerReport: process.env.npm_config_report
+    }
 }
