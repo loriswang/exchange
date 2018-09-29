@@ -10,27 +10,35 @@ module.exports = {
         // Paths
         assetsSubDirectory: 'static',
         assetsPublicPath: '/',
-        proxyTable: {
-            '/v1/oauth/token': {     //这里是公共部分，在调用接口时后面接不相同的部分，/api就相当于http://192.168.0.199:8926/api这一段
-                target: 'http://ddd.test',   //这里写的是访问接口的域名和端口号
-                changeOrigin: true, // 必须加上这个才能跨域请求
-                // pathRewrite: {  // 重命名
-                //   '^/api': '/'
-                // }
-            },
-            '/v1/user/user/show': {     //这里是公共部分，在调用接口时后面接不相同的部分，/api就相当于http://192.168.0.199:8926/api这一段
-                target: 'http://ddd.test',   //这里写的是访问接口的域名和端口号
-                changeOrigin: true // 必须加上这个才能跨域请求
-            },
-            '/v1/wallet/account/balance': {     //这里是公共部分，在调用接口时后面接不相同的部分，/api就相当于http://192.168.0.199:8926/api这一段
-                target: 'http://ddd.test',   //这里写的是访问接口的域名和端口号
-                changeOrigin: true // 必须加上这个才能跨域请求
-            },
-        },
+        // proxyTable: {
+        //     '/v1/user/auth/login': {     //这里是公共部分，在调用接口时后面接不相同的部分，/api就相当于http://192.168.0.199:8926/api这一段
+        //         target: 'http://ddd.test',   //这里写的是访问接口的域名和端口号
+        //         changeOrigin: true, // 必须加上这个才能跨域请求
+        //         // pathRewrite: {  // 重命名
+        //         //   '^/api': '/'
+        //         // }
+        //     },
+        //     '/v1/user/user/show': {
+        //         target: 'http://ddd.test',
+        //         changeOrigin: true
+        //     },
+        //     '/v1/wallet/account/balance': {
+        //         target: 'http://ddd.test',
+        //         changeOrigin: true
+        //     },
+        //     '/v1/common/symbols': {
+        //         target: 'http://ddd.test',
+        //         changeOrigin: true
+        //     },
+        //     '/v1/trade/orders': {
+        //         target: 'http://ddd.test',
+        //         changeOrigin: true
+        //     },
+        // },
 
         // Various Dev Server settings
-        host: 'localhost', // can be overwritten by process.env.HOST
-        // host: '0.0.0.0', // can be overwritten by process.env.HOST
+        // host: 'http://ddd.test', // can be overwritten by process.env.HOST
+        host: '0.0.0.0', // can be overwritten by process.env.HOST
         port: 8088, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
         autoOpenBrowser: false,
         errorOverlay: true,

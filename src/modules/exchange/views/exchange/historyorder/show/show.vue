@@ -1,6 +1,6 @@
 <template>
     <!--交易 -> 当前委托(全部) -> 历史订单 -> 详情-->
-    <div class="m-exchange__historyordershowpage">
+    <div class="m-exchange__historyordershowpage" v-if="this.exchangeListData">
         <x-header title="交易详情" :left-options="{backText: ''}">
         </x-header>
 
@@ -9,10 +9,10 @@
                 <div class="m-exchange__historyordershow-head-caption">
                     <div class="m-exchange__historyordershow-head-title">
                         <span class="m-badge m-badge--danger m-badge--wide">
-                            卖出
+                            {{this.exchangeListData.side | judgeBuy}}
                         </span>
                         <span>
-                            FBC/BTC
+                            {{this.exchangeListData.base | toUpper}}/{{this.exchangeListData.quote | toUpper}}
                         </span>
                     </div>
                     <div class="m-exchange__historyordershow-head-desc">
@@ -37,7 +37,7 @@
                         成交数量
                     </div>
                     <div class="m-exchange__historyordershow-body-item-r">
-                        2500
+                        {{this.exchangeListData.filled_amount | numberIntercept}}
                     </div>
                 </div>
                 <div class="m-exchange__historyordershow-body-item">
@@ -45,7 +45,7 @@
                         委托数量
                     </div>
                     <div class="m-exchange__historyordershow-body-item-r">
-                        2500
+                        {{this.exchangeListData.amount | numberIntercept}}
                     </div>
                 </div>
                 <div class="m-exchange__historyordershow-body-item">
@@ -53,7 +53,7 @@
                         挂单价格
                     </div>
                     <div class="m-exchange__historyordershow-body-item-r">
-                        0.000350
+                        {{this.exchangeListData.price | numberIntercept}}
                     </div>
                 </div>
                 <div class="m-exchange__historyordershow-body-item">
@@ -61,7 +61,7 @@
                         成交价格
                     </div>
                     <div class="m-exchange__historyordershow-body-item-r">
-                        0.000400
+                        {{this.exchangeListData.executed_value | numberIntercept}}
                     </div>
                 </div>
             </div>
@@ -70,16 +70,22 @@
                     <div class="m-exchange__historyordershow-footer-item-l">
                         手续费
                     </div>
-                    <div class="m-exchange__historyordershow-footer-item-r">
-                        2.5 FBC
+                    <div v-if="this.exchangeListData.side === 'buy'" class="m-exchange__historyordershow-footer-item-r">
+                        {{this.exchangeListData.fill_fees | numberIntercept}} {{this.exchangeListData.base | toUpper}}
+                    </div>
+                    <div v-else="" class="m-exchange__historyordershow-footer-item-r">
+                        {{this.exchangeListData.fill_fees | numberIntercept}} {{this.exchangeListData.quote | toUpper}}
                     </div>
                 </div>
                 <div class="m-exchange__historyordershow-footer-item">
                     <div class="m-exchange__historyordershow-footer-item-l">
                         成交额
                     </div>
-                    <div class="m-exchange__historyordershow-footer-item-r">
-                        1 FBC
+                    <div v-if="this.exchangeListData.side === 'buy'" class="m-exchange__historyordershow-footer-item-r">
+                        {{this.exchangeListData.executed_value | numberIntercept}} {{this.exchangeListData.quote | toUpper}}
+                    </div>
+                    <div v-else="" class="m-exchange__historyordershow-footer-item-r">
+                        {{this.exchangeListData.executed_value | numberIntercept}} {{this.exchangeListData.quote | toUpper}}
                     </div>
                 </div>
             </div>
@@ -90,7 +96,7 @@
                 <div class="m-exchange__historyorderfilllist__head-caption">
                     <div class="m-exchange__historyorderfilllist__head-title">
                         <h2 class="m-exchange__historyorderfilllist__head-text">
-                            成交详情
+                            成交详情{{this.uuid}}
                         </h2>
                     </div>
                 </div>
@@ -122,18 +128,18 @@
                 <div class="m-exchange__historyorderfilllist__body-item">
                     <div class="m-exchange__historyorderfilllist__body-item-1">
                       <span class="m-exchange__historyorderfilllist__body-item-date">
-                            18-06-08 10:00:00
+                            {{this.exchangeListData.created_at.date | strIntercept}}
                         </span>
 
                     </div>
                     <div class="m-exchange__historyorderfilllist__body-item-2">
                           <span class="m-exchange__historyorderfilllist__body-item-amount">
-                            2000
+                            {{this.exchangeListData.filled_price | numberIntercept}}
                         </span>
                     </div>
                     <div class="m-exchange__historyorderfilllist__body-item-3">
                         <span class="m-exchange__historyorderfilllist__body-item-price">
-                            0.000400
+                            {{this.exchangeListData.filled_amount | numberIntercept}}
                         </span>
                     </div>
                 </div>
@@ -383,7 +389,7 @@
                 background: white;
                 font-size: get-font-size(regular, '+');
 
-                .m-exchange__historyorderfilllist__body-header{
+                .m-exchange__historyorderfilllist__body-header {
                     background-color: get-color(light, box) !important;
                 }
 
@@ -417,7 +423,6 @@
                         display: block;
                     }
 
-
                     .m-exchange__historyorderfilllist__body-item-date {
                         font-weight: get-font-weight(bolder);
                         display: block;
@@ -433,7 +438,6 @@
                         font-weight: get-font-weight(bolder);
                     }
 
-
                 }
             }
 
@@ -444,19 +448,58 @@
 </style>
 
 <script>
-    import { XHeader, Group, Cell } from 'vux'
+    import {XHeader, Group, Cell} from 'vux'
+    import {Decimal} from 'decimal.js'
+    import {exchangeItem} from '@/modules/exchange/api/get_exchange'
 
     export default {
         name: 'User',
-        data () {
+        data() {
             return {
-                imgList: []
+                uuid: null,
+                exchangeListData: null
             }
         },
-        created () {
+        created() {
+            this.ready()
         },
-        methods: {},
-
+        methods: {
+            ready() {
+                this.uuid = this.$route.query.uuid
+                // 请求数据并替换data数据
+                this.getExchangeList(this.uuid)
+            },
+            getExchangeList(id) {
+                exchangeItem(id).then(res => {
+                    if (res.status === 200 && res.statusText === 'OK') {
+                        const data = res.data
+                        if (data.code === '200') {
+                            this.exchangeListData = data.data
+                        }
+                    }
+                })
+            }
+        },
+        filters: {
+            toUpper(val) {
+                return val.toUpperCase()
+            },
+            strIntercept(val) {
+                return val.substr(2, 17)
+            },
+            numberIntercept(val) {
+                return new Decimal(val).toFixed(8)
+            },
+            judgeBuy(val) {
+                return (val === 'buy') ? '买入' : '卖出'
+            }
+//            计算手续费单位
+        },
+        watch: {
+            '$route'() {
+                this.ready()
+            }
+        },
         components: {
             Group,
             XHeader,

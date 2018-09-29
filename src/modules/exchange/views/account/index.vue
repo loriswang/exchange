@@ -24,14 +24,14 @@
 
         <group class="m-account__list" v-if="this.assetsList">
             <cell @click.native="getDescribe(item)" v-for="item in this.assetsList" :key="item.currency">
-                    <div slot="title">
-                        <span class="m-account__list_code">{{item.currency}}</span>
-                        <span class="m-account__list-name">({{item.fullName}})</span>
-                    </div>
-                    <span slot="icon" class="m-account__list-icon">
+                <div slot="title">
+                    <span class="m-account__list_code">{{item.currency}}</span>
+                    <span class="m-account__list-name">({{item.fullName}})</span>
+                </div>
+                <span slot="icon" class="m-account__list-icon">
                     <img :src='item.src'>
                 </span>
-                    <span class="m-account__list-total">
+                <span class="m-account__list-total">
                     {{item.available}}
                 </span>
             </cell>
@@ -140,8 +140,7 @@
 
 <script>
     import {XHeader, Group, Cell} from 'vux'
-    import { mapActions } from 'vuex'
-    import {getAssets} from '@/modules/exchange/api/get_exchange'
+    import {mapState} from 'vuex'
 
     const imgSrc = {
         FBC: {
@@ -167,6 +166,10 @@
         ZL: {
             src: require('@/assets/img/currency/usdt.png'),
             fullName: 'ZL'
+        },
+        TEST: {
+            src: require('@/assets/img/currency/usdt.png'),
+            fullName: 'TEST'
         }
     }
 
@@ -182,14 +185,10 @@
             this.getAssets()
         },
         methods: {
-            ...mapActions({
-                setAssets: 'setAssets'
-            }),
             linkFinance() {
                 this.$router.push({path: '/finance'})
             },
             getDescribe(item) {
-//                console.log('click')
                 this.$router.push({
                     path: '/account/show',
                     query: {
@@ -198,29 +197,28 @@
                 })
             },
             getAssets() {
-                getAssets().then((response) => {
-                    const res = response.data
-                    if (res.code === '200') {
-                        let data = this.addText(res.data)
-                        this.assetsList = data
-                        this.setAssets(this.assetsList)
-                    }
-                })
+                let data = this.addText(this.wallet)
+                this.assetsList = data
             },
             addText(data) {
                 const vdata = data
                 for (let i = 0; i < vdata.length; i++) {
                     const currency = vdata[i].currency.toUpperCase()
-                    vdata[i].src = null
-                    vdata[i].FullName = null
-                    vdata[i].src = imgSrc[currency].src
-                    vdata[i].fullName = imgSrc[currency].fullName
+                    const link = 'src'
+                    const fullName = 'fullName'
+                    vdata[i][link] = imgSrc[currency].src
+                    vdata[i][fullName] = imgSrc[currency].fullName
                 }
                 return vdata
             }
         },
-        filters: {},
-
+        computed: {
+            ...mapState({
+                wallet: state => state.user.wallet
+            })
+        },
+        watch: {
+        },
         components: {
             Group,
             XHeader,

@@ -2,7 +2,6 @@ import http from '@/utils/http'
 
 export function test() {
     return http({
-        // url: '/api/env',
         url: '/user/userToken',
         method: 'get'
     })
@@ -11,24 +10,22 @@ export function test() {
 // 获取token
 export function ajaxToken() {
     const data = {
-        grant_type: 'password',
-        client_id: 4,
-        client_secret: 'wGDEq1rs2q2P2dXuGJPav8DuxjfpuCK4XAW0lztO',
-        username: '18513063312',
+        account: 'ex1@gmail.com',
         password: '123123'
     }
     return http({
-        url: '/v1/oauth/token',
+        url: '/v1/user/auth/login',
         method: 'post',
         data
     })
 }
-// export function ajaxToken() {
-//     return http({
-//         url: '/v1/oauth/token',
-//         method: 'post'
-//     })
-// }
+// 获取钱包余额
+export function getAssets() {
+    return http({
+        url: '/v1/wallet/account/balance',
+        method: 'get'
+    })
+}
 
 // 请求用户数据
 export function getUserInfo() {

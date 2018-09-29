@@ -1,6 +1,6 @@
 
 const Test = r => require.ensure([], () => r(require('@/modules/user/views/home/test')), 'test')
-const Verification = r => require.ensure([], () => r(require('@/modules/user/views/home/verification')), 'verification')
+const autologin = r => require.ensure([], () => r(require('@/modules/user/views/home/autologin')), 'autologin')
 const Layout = r => require.ensure([], () => r(require('@/modules/user/views/layout/layout')), 'layout')
 const LoginLayout = r => require.ensure([], () => r(require('@/modules/user/views/layout/loginLayout')), 'loginLayout')
 const HomeIndex = r => require.ensure([], () => r(require('@/modules/user/views/home/index')), 'home')
@@ -12,6 +12,7 @@ const SignUpEmail = r => require.ensure([], () => r(require('@/modules/user/view
 const Forget = r => require.ensure([], () => r(require('@/modules/user/views/login/forget/forget')), 'signIn')
 
 const ExchangeIndex = r => require.ensure([], () => r(require('@/modules/exchange/views/exchange/index')), 'user')
+// const TestExchange = r => require.ensure([], () => r(require('@/modules/exchange/views/exchange/components/test/test')), 'testExchange')
 const ExchangeOpenOrder = r => require.ensure([], () => r(require('@/modules/exchange/views/exchange/openorder/index')), 'exchangeOpenOrder')
 const ExchangeHistoryOrder = r => require.ensure([], () => r(require('@/modules/exchange/views/exchange/historyorder/index')), 'exchangeHistoryOrder')
 const ExchangeHistoryOrderShow = r => require.ensure([], () => r(require('@/modules/exchange/views/exchange/historyorder/show/show')), 'exchangeHistoryOrderShow')
@@ -33,20 +34,20 @@ const routes = [
         }
     },
     {
-        path: '/verification',
-        name: 'Verification',
-        component: Verification,
-        meta: {
-            title: 'Verification'
-        }
-    },
-    {
         path: '/',
         component: Layout,
         children: [
             {
                 path: '/',
-                redirect: '/home'
+                redirect: '/autologin'
+            },
+            {
+                path: '/autologin',
+                name: 'autologin',
+                component: autologin,
+                meta: {
+                    title: 'autologin'
+                }
             },
             {
                 path: 'home',
@@ -57,12 +58,13 @@ const routes = [
                 component: HomeIndex
             },
             {
-                path: 'exchange',
+                path: '/exchange',
                 name: 'exchangeIndex',
                 meta: {
                     title: '交易',
                     requiresAuth: false
                 },
+                // redirect: '/exchange/testExchange',
                 component: ExchangeIndex
             },
             {

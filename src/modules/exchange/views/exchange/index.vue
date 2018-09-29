@@ -1,17 +1,22 @@
 <template>
     <!--交易(tab页面) -->
     <div style="height:100%;">
-        <drawer
-                :show.sync="drawerVisibility"
+        <drawer :show.sync="drawerVisibility"
                 :show-mode="showModeValue"
                 :placement="showPlacementValue"
                 :drawer-style="{ width: '280px' }">
 
             <div slot="drawer">
-                <exchange-drawer @upParents="handleToggleSliderNav"></exchange-drawer>
+                <exchange-drawer @upParents="handleToggleSliderNav"
+                                 @upSelectIndex="getSelectIndex"
+                                 :exchangeList='this.exchangeList'
+                                 :transferSelectIndex='this.selectIndex'>
+                </exchange-drawer>
             </div>
-
             <div>
+                <!--<router-view></router-view>-->
+            </div>
+            <div body-padding-bottom="55px">
                 <div class="m-exchange">
                     <x-header class="m-exchange__header" title="" :left-options="{backText: ''}">
                      <span class="m-exchange__tools" slot="overwrite-left"
@@ -19,112 +24,25 @@
                           <span class="m-exchange__tools-icon" slot="icon">
                               <i class="mcicon-category"></i>
                           </span>
-                         <span class="m-exchange__tools-text">
-                             FBC/USDT
+                         <span class="m-exchange__tools-text" v-if="this.selectData">
+                             {{this.selectData.base_currency | toUpper}}/{{this.selectData.quote_currency | toUpper}}
                          </span>
                          <span class="m-exchange__tools-desc">
                              切换
                          </span>
-                      </span>
+                     </span>
                     </x-header>
                     <div class="m-exchange__trade">
                         <div class="m-exchange__orderbook-ticker">
                             <h1 class="m-exchange__orderbook-ticker-price m--font-success">
-                                1.2000
+                                {{this.buyP}}
                             </h1>
                             <span class="m-exchange__orderbook-ticker-rmb">
-                        ≈40881.18CNY
-                    </span>
+                                ≈ 0 CNY
+                            </span>
                         </div>
-                        <div class="m-exchange__orderbook">
-                            <div class="m-exchange__orderbook-buy">
-                                <div class="m-exchange__orderbook-header">
-                                    <span class="m-exchange__orderbook-hand">买</span>
-                                    <span class="m-exchange__orderbook-amount">数量</span>
-                                    <span class="m-exchange__orderbook-price">价格</span>
-                                </div>
-                                <div class="m-exchange__orderbook-depth">
-                                    <div class="m-exchange__orderbook-depth-item">
-                                        <span class="m-exchange__orderbook-hand">1</span>
-                                        <span class="m-exchange__orderbook-amount">5.4232</span>
-                                        <span class="m-exchange__orderbook-price">539.59</span>
-                                        <span class="m-exchange__orderbook-bg" style="width: 18.88303652198117%"></span>
-                                    </div>
 
-                                    <div class="m-exchange__orderbook-depth-item">
-                                        <span class="m-exchange__orderbook-hand">2</span>
-                                        <span class="m-exchange__orderbook-amount">5.4232</span>
-                                        <span class="m-exchange__orderbook-price">539.59</span>
-                                        <span class="m-exchange__orderbook-bg" style="width: 60%"></span>
-                                    </div>
-
-                                    <div class="m-exchange__orderbook-depth-item">
-                                        <span class="m-exchange__orderbook-hand">3</span>
-                                        <span class="m-exchange__orderbook-amount">5.4232</span>
-                                        <span class="m-exchange__orderbook-price">539.59</span>
-                                        <span class="m-exchange__orderbook-bg" style="width: 41.8%"></span>
-                                    </div>
-
-                                    <div class="m-exchange__orderbook-depth-item">
-                                        <span class="m-exchange__orderbook-hand">4</span>
-                                        <span class="m-exchange__orderbook-amount">5.4232</span>
-                                        <span class="m-exchange__orderbook-price">539.59</span>
-                                        <span class="m-exchange__orderbook-bg" style="width: 0%"></span>
-                                    </div>
-
-                                    <div class="m-exchange__orderbook-depth-item">
-                                        <span class="m-exchange__orderbook-hand">5</span>
-                                        <span class="m-exchange__orderbook-amount">5.4232</span>
-                                        <span class="m-exchange__orderbook-price">539.59</span>
-                                        <span class="m-exchange__orderbook-bg" style="width: 12%"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="m-exchange__orderbook-sell">
-                                <div class="m-exchange__orderbook-header">
-                                    <span class="m-exchange__orderbook-price">价格</span>
-                                    <span class="m-exchange__orderbook-amount">数量</span>
-                                    <span class="m-exchange__orderbook-hand">卖</span>
-                                </div>
-                                <div class="m-exchange__orderbook-depth">
-                                    <div class="m-exchange__orderbook-depth-item">
-                                        <span class="m-exchange__orderbook-price">539.59</span>
-                                        <span class="m-exchange__orderbook-amount">5.4232</span>
-                                        <span class="m-exchange__orderbook-hand">1</span>
-                                        <span class="m-exchange__orderbook-bg" style="width: 8.88303652198117%"></span>
-                                    </div>
-
-                                    <div class="m-exchange__orderbook-depth-item">
-                                        <span class="m-exchange__orderbook-price">539.59</span>
-                                        <span class="m-exchange__orderbook-amount">5.4232</span>
-                                        <span class="m-exchange__orderbook-hand">2</span>
-                                        <span class="m-exchange__orderbook-bg" style="width: 48.88303652198117%"></span>
-                                    </div>
-
-                                    <div class="m-exchange__orderbook-depth-item">
-                                        <span class="m-exchange__orderbook-price">539.59</span>
-                                        <span class="m-exchange__orderbook-amount">5.4232</span>
-                                        <span class="m-exchange__orderbook-hand">3</span>
-                                        <span class="m-exchange__orderbook-bg" style="width: 28.88303652198117%"></span>
-                                    </div>
-
-                                    <div class="m-exchange__orderbook-depth-item">
-                                        <span class="m-exchange__orderbook-price">539.59</span>
-                                        <span class="m-exchange__orderbook-amount">5.4232</span>
-                                        <span class="m-exchange__orderbook-hand">4</span>
-                                        <span class="m-exchange__orderbook-bg" style="width: 88.88303652198117%"></span>
-                                    </div>
-
-                                    <div class="m-exchange__orderbook-depth-item">
-                                        <span class="m-exchange__orderbook-price">539.59</span>
-                                        <span class="m-exchange__orderbook-amount">5.4232</span>
-                                        <span class="m-exchange__orderbook-hand">5</span>
-                                        <span class="m-exchange__orderbook-bg" style="width: 28.88303652198117%"></span>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
+                        <handicap :handicapData="handicapData"></handicap>
 
                         <div class="m-exchange__tradepanel">
                             <div class="m-exchange__tradepanel-tab">
@@ -137,46 +55,21 @@
                                     </tab-item>
                                 </tab>
                             </div>
-
-                            <NumberInput
-                                    :min="0"
-                                    :max="10"
-                                    :controls=0
-                                    :integerOnly="true"
-                            />
-
-                            <NumberInput
-                                    :min="0"
-                                    :max="10"
-                                    :controls=1
-                                    :integerOnly="true"
-                            />
-
-                            <div class="m-exchange__tradepanel-available">
-                        <span class="m-exchange__tradepanel-available-text">
-                            可用
-                        </span>
-                                <span class="m-exchange__tradepanel-available-value">
-                            1 BTC
-                        </span>
+                            <!--买入-->
+                            <div v-show="this.tab_index === 0">
+                                <Buy-transaction :selectData='this.selectData' :tabIndex='this.tab_index'
+                                                 :buyP="this.buyP" @submiting="refreshing">
+                                </Buy-transaction>
                             </div>
-
-                            <div class="m-exchange__tradepanel-total">
-                        <span class="m-exchange__tradepanel-total-text">
-                            交易额
-                        </span>
-                                <span class="m-exchange__tradepanel-total-value">
-                            10000.00000 USDT
-                        </span>
+                            <!--卖出-->
+                            <div v-show="this.tab_index === 1">
+                                <Sell-transaction :selectData='this.selectData' :tabIndex='this.tab_index'
+                                                  :sellP="this.sellP" @submiting="refreshing">
+                                </Sell-transaction>
                             </div>
-
-                            <x-button class="btn_base"
-                                      :class="{ btn_primary : tab_index===0, btn_danger : tab_index===1 }" link="##">
-                                买入FBC
-                            </x-button>
                         </div>
                     </div>
-                    <open-orders disabled></open-orders>
+                    <open-orders :submited="submited" @reset="resetSubmited" disabled></open-orders>
                 </div>
             </div>
 
@@ -412,14 +305,24 @@
 
 <script>
     import {TransferDom, XHeader, XButton, Group, Cell, Tab, TabItem, Drawer} from 'vux'
+    import {mapState, mapActions} from 'vuex'
+    import {getSymbols, getHandicap, getPrice} from '@/modules/exchange/api/get_exchange'
+    import {getAssets} from '@/modules/user/api/get_user'
     import NumberInput from '@/components/NumberInput/NumberInput'
+    import Handicap from './components/handicap/handicap.vue'
+    import BuyTransaction from './components/ExchangeDrawer/transaction/buyTransaction.vue'
+    import SellTransaction from './components/ExchangeDrawer/transaction/sellTransaction.vue'
     import OpenOrders from './components/OpenOrders/OpenOrders.vue'
     import ExchangeDrawer from './components/ExchangeDrawer/ExchangeDrawer.vue'
+
+    //    const sellP = 20.038448596849
+    //    const buyP = 250.439448596849
 
     export default {
         name: 'Home',
         data() {
             return {
+                loadingNum: 8,
                 tab_index: 0,
                 exchangeMenu: ['买入', '卖出'],
                 selected: '买入',
@@ -427,23 +330,135 @@
                 showMode: 'overlay',
                 showModeValue: 'overlay',
                 showPlacement: 'left',
-                showPlacementValue: 'left'
+                showPlacementValue: 'left',
+                exchangeList: [],
+                selectIndex: 0,
+                selectData: null,
+                sellP: 0,
+                buyP: 1,
+                submited: false,
+                handicapData: null
             }
         },
         created() {
+            this.calcTime()
+            this.getSymbolsData()
         },
         methods: {
+            ...mapActions([
+                'setWallet'
+            ]),
+//            loading提示
+            showloading() {
+                this.$vux.loading.show({
+                    text: '加载中...'
+                })
+            },
+            hideloading() {
+                this.$vux.loading.hide()
+            },
             handleToggleSliderNav() {
                 this.drawerVisibility = !this.drawerVisibility
             },
             onItemClick(index) {
                 if (this.tab_index === index) return
                 this.tab_index = index
-                console.log(index)
+//                console.log(index)
+            },
+//            计时器
+            calcTime() {
+                setInterval(this.gethandicapData, 20000)
+                setInterval(this.getPriceData, 20000)
+            },
+//            获取盘口信息
+            gethandicapData() {
+                const _this = this
+                getHandicap().then(res => {
+                    if (res.status === 200 && res.statusText === 'OK') {
+                        if (res.data.code === '200') {
+                            const data = res.data.data
+                            _this.handicapData = data
+                        }
+                    }
+                })
+            },
+//            获取价格信息
+            getPriceData() {
+                const _this = this
+                getPrice().then(res => {
+                    if (res.status === 200 && res.statusText === 'OK') {
+                        if (res.data.code === '200') {
+                            const data = res.data.data
+                            _this.buyP = data.last
+                            _this.sellP = data.last
+                        }
+                    }
+                })
+            },
+//            请求交易数据
+            getSymbolsData() {
+                this.loadingNum -= 1
+                getSymbols().then((res) => {
+//                    console.log(res)
+                    if (res.status === 200 && res.statusText === 'OK') {
+                        this.exchangeList = res.data.data
+                        this.transferSelectData(this.selectIndex)
+                        this.loadingNum += 1
+                    }
+                })
+            },
+            getSelectIndex(i) {
+//                console.log(i)
+                this.selectIndex = i
+                this.transferSelectData(this.selectIndex)
+            },
+//            筛选当前交易币兑
+            transferSelectData(i) {
+//                console.log(this.exchangeList[i])
+                this.selectData = this.exchangeList[i]
+            },
+//            获取钱包余额
+            ajaxWallet() {
+                getAssets().then((res) => {
+                    if (res.status === 200 && res.statusText === 'OK') {
+                        let data = res.data.data
+                        console.log(700)
+                        this.setWallet(data)
+                        this.submited = true
+                    }
+                })
+            },
+            refreshing() {
+                console.log(800)
+                this.ajaxWallet()
+            },
+//            列表刷新完成,还原状态
+            resetSubmited() {
+                console.log('reset')
+                this.submited = false
             }
         },
         directives: {
             TransferDom
+        },
+        filters: {
+            toUpper(val) {
+                return val.toUpperCase()
+            }
+        },
+        computed: {
+            ...mapState({
+                wallet: state => state.user.wallet
+            })
+        },
+        watch: {
+            loadingNum() {
+                if (this.loadingNum === 8) {
+                    this.hideloading()
+                } else {
+                    this.showloading()
+                }
+            }
         },
         components: {
             XButton,
@@ -455,7 +470,10 @@
             XHeader,
             Drawer,
             OpenOrders,
-            ExchangeDrawer
+            ExchangeDrawer,
+            Handicap,
+            BuyTransaction,
+            SellTransaction
         }
     }
 </script>

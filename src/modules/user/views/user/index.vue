@@ -5,25 +5,25 @@
                 <span class="m-user__info-avataricon" slot="icon"><i class="mcicon-shenfenzheng"></i></span>
             </div>
 
-            <!--<div class="m-user__info-r">-->
-                <!--<span class="m-user__info-name">-->
-                <!--18513063312-->
-                <!--</span>-->
-                <!--<span class="m-user__info-uid">-->
-                <!--uid: 38JKzl2a-->
-                <!--</span>-->
-            <!--</div>-->
-
             <div class="m-user__info-r">
-                <router-link to="/login" class="m-user__info-r">
-                    <span class="m-user__info-name">
-                        请点击登录
-                    </span>
-                        <span class="m-user__info-uid">
-                        欢迎来到交易所
-                    </span>
-                </router-link>
+                <span class="m-user__info-name">
+                {{this.userName}}
+                </span>
+                <span class="m-user__info-uid">
+                欢迎来到交易所
+                </span>
             </div>
+
+            <!--<div class="m-user__info-r">-->
+            <!--<router-link to="/login" class="m-user__info-r">-->
+            <!--<span class="m-user__info-name">-->
+            <!--请点击登录-->
+            <!--</span>-->
+            <!--<span class="m-user__info-uid">-->
+            <!--欢迎来到交易所-->
+            <!--</span>-->
+            <!--</router-link>-->
+            <!--</div>-->
 
         </group>
 
@@ -43,7 +43,6 @@
             <cell title="设置" is-link>
                 <span class="m-user__setting-icon" slot="icon"><i class="mcicon-shezhi"></i></span>
             </cell>
-
         </group>
 
     </div>
@@ -129,19 +128,56 @@
 </style>
 
 <script>
-    import { Group, Cell, trim } from 'vux'
+    import {Group, Cell, trim} from 'vux'
+    import {getUserInfo} from '@/modules/user/api/get_user'
 
     export default {
         name: 'User',
-        data () {
+        data() {
             return {
-                imgList: []
+                userInfoData: {},
+                userName: ''
             }
         },
-        created () {
+        created() {
+            this.getUserInfoData()
         },
-        methods: {},
-
+        methods: {
+//            loading提示
+            showloading() {
+                this.$vux.loading.show({
+                    text: '加载中...'
+                })
+            },
+            hideloading() {
+                this.$vux.loading.hide()
+            },
+            getUserInfoData() {
+                this.showloading()
+                getUserInfo().then(res => {
+                    if (res.status === 200 && res.statusText === 'OK') {
+                        if (res.data.code === '200') {
+                            this.userInfoData = res.data.data
+                            this.hideloading()
+                        }
+                    }
+                })
+            },
+            calcUserName() {
+                if (this.userInfoData.email) {
+                    this.userName = this.userInfoData.email
+                } else if (this.userInfoData.mobile) {
+                    this.userName = this.userInfoData.mobile
+                } else {
+                    this.userName = this.userInfoData.uuid
+                }
+            }
+        },
+        watch: {
+            userInfoData() {
+                this.calcUserName()
+            }
+        },
         components: {
             Group,
             Cell,

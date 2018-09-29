@@ -15,6 +15,7 @@
     @import '~vux/src/styles/tap.less';
 
     body {
+        position: relative;
         background-color: #fbf9fe;
         overflow-x: hidden;
     }

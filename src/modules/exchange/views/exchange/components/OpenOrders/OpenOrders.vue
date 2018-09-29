@@ -25,126 +25,62 @@
         </div>
 
         <div class="m-exchange__openorder__body">
-            <div class="m-exchange__openorder__body-item">
+            <div class="m-exchange__openorder__body-item" v-for="item in this.exchangeListData" :key="item.uuid">
                 <div class="m-exchange__openorder__body-item-1">
-                        <span class="m-exchange__openorder__body-item-side m--font-danger">
-                            卖出
-                        </span>
-                    <span class="m-exchange__openorder__body-item-pair">
-                            FBC/BTC
-                        </span>
-                    <span class="m-exchange__openorder__body-item-name">
-                            成交
-                        </span>
-                    <span class="m-exchange__openorder__body-item-filled">
-                            2000
-                        </span>
-                </div>
-                <div class="m-exchange__openorder__body-item-2">
-                        <span class="m-exchange__openorder__body-item-date">
-                            18-06-08 10:00:00
-                        </span>
-                    <span class="m-exchange__openorder__body-item-name">
-                            数量
-                        </span>
-                    <span class="m-exchange__openorder__body-item-amount">
-                            2000
-                        </span>
-                </div>
-                <div class="m-exchange__openorder__body-item-3">
-                        <span class="m-exchange__openorder__body-item-action">
-                             <x-button mini plain type="primary" link="/">撤销</x-button>
-                        </span>
-
-                    <span class="m-exchange__openorder__body-item-name">
-                            价格
-                        </span>
-                    <span class="m-exchange__openorder__body-item-price">
-                            0.000400
-                        </span>
-                </div>
-            </div>
-
-            <div class="m-exchange__openorder__body-item">
-                <div class="m-exchange__openorder__body-item-1">
-                        <span class="m-exchange__openorder__body-item-side m--font-success">
+                    <span v-if="item.side == buy" class="m-exchange__openorder__body-item-side m--font-success">
                             买入
                         </span>
-                    <span class="m-exchange__openorder__body-item-pair">
-                            FBC/BTC
-                        </span>
-                    <span class="m-exchange__openorder__body-item-name">
-                            成交
-                        </span>
-                    <span class="m-exchange__openorder__body-item-filled">
-                            2000
-                        </span>
-                </div>
-                <div class="m-exchange__openorder__body-item-2">
-                        <span class="m-exchange__openorder__body-item-date">
-                            18-06-08 10:00:00
-                        </span>
-                    <span class="m-exchange__openorder__body-item-name">
-                            数量
-                        </span>
-                    <span class="m-exchange__openorder__body-item-amount">
-                            2000
-                        </span>
-                </div>
-                <div class="m-exchange__openorder__body-item-3">
-                        <span class="m-exchange__openorder__body-item-action">
-                             <x-button mini plain type="primary" link="/">撤销</x-button>
-                        </span>
-
-                    <span class="m-exchange__openorder__body-item-name">
-                            价格
-                        </span>
-                    <span class="m-exchange__openorder__body-item-price">
-                            0.000400
-                        </span>
-                </div>
-            </div>
-
-            <div class="m-exchange__openorder__body-item">
-                <div class="m-exchange__openorder__body-item-1">
-                        <span class="m-exchange__openorder__body-item-side m--font-danger">
+                    <span v-else="" class="m-exchange__openorder__body-item-side m--font-danger">
                             卖出
                         </span>
                     <span class="m-exchange__openorder__body-item-pair">
-                            FBC/BTC
-                        </span>
-
-                    <span class="m-exchange__openorder__body-item-name">
-                            成交
-                        </span>
-                    <span class="m-exchange__openorder__body-item-filled">
-                            2000
-                        </span>
-                </div>
-                <div class="m-exchange__openorder__body-item-2">
-                        <span class="m-exchange__openorder__body-item-date">
-                            18-06-08 10:00:00
+                            {{item.base | toUpper}}/{{item.quote | toUpper}}
                         </span>
                     <span class="m-exchange__openorder__body-item-name">
                             数量
                         </span>
                     <span class="m-exchange__openorder__body-item-amount">
-                            2000
+                            {{item.amount | numberIntercept}}
                         </span>
+
                 </div>
-                <div class="m-exchange__openorder__body-item-3">
-                        <span class="m-exchange__openorder__body-item-action">
-                             <x-button mini plain type="primary" link="/">撤销</x-button>
+                <div class="m-exchange__openorder__body-item-2">
+                    <span class="m-exchange__openorder__body-item-date">
+                            {{item.created_at.date | strIntercept}}
                         </span>
                     <span class="m-exchange__openorder__body-item-name">
                             价格
                         </span>
                     <span class="m-exchange__openorder__body-item-price">
-                            0.000400
+                            {{item.price | numberIntercept}}
+                        </span>
+                </div>
+                <div class="m-exchange__openorder__body-item-3">
+                        <!--<span class="m-exchange__openorder__body-item-action">-->
+                             <!--<x-button mini plain type="primary" @click.native="onItemClick(item.uuid)">撤销</x-button>-->
+                        <!--</span>-->
+                    <span class="m-exchange__openorder__body-item-name">
+                            成交
+                        </span>
+                    <span class="m-exchange__openorder__body-item-filled">
+                            {{item.executed_value | numberIntercept}}
                         </span>
                 </div>
             </div>
+            <div class="empty_space"></div>
         </div>
+        <loading v-model="showLoadingInfo"
+                 :text="toastText"
+                 :position="positionLoading">
+        </loading>
+        <toast class="warn-toast"
+               v-model="showPositionValue"
+               type="text"
+               :time="loadTime"
+               is-show-mask
+               :text="toastText"
+               :position="position">
+        </toast>
     </div>
 </template>
 
@@ -373,37 +309,134 @@
                     border: 1px solid array-get($m--state-colors, danger, base) !important;
                 }
             }
+            .empty_space {
+                height: 6rem;
+            }
         }
 
         background-color: array-get($m--state-colors, light, base);
         border-color: array-get($m--state-colors, light, base);
+
+    }
+
+    .weui-toast {
+        top: 50%;
+        transform: translateX(-50%) translateY(-50%);
     }
 
 </style>
 
 <script>
-    import { XButton } from 'vux'
+    import {Confirm, Loading, XButton, Toast} from 'vux'
+    import {Decimal} from 'decimal.js'
+    import {exchangeList, exchangeChanel} from '@/modules/exchange/api/get_exchange'
+    //    const uid = '56d988b0-1ff8-4542-b08a-f5b86c32ee76'
+    const submit = '已撤销'
+    const unsubmit = '撤销失败'
 
     export default {
         name: 'open-orders',
-        props: {
-            disabled: Boolean
-        },
-
-        data () {
+        data() {
             return {
-                demo1: 1
+                buy: 'buy',
+                showPositionValue: false, // 是否显示提示
+                position: 'middle', // 提示信息的位置
+                positionLoading: 'absolute', // 提示信息的位置
+                toastText: '', // 提示文本
+                loadTime: 3000, // 加载时间
+                showLoadingInfo: false,
+                exchangeListData: [],
+                resetList: false,    // 列表是否需要刷新,true刷新,false不刷新
+                state: 'open'
             }
         },
-        created () {
+        props: {
+            disabled: Boolean,
+            submited: Boolean
+        },
+        created() {
+            this.getExchangeList(this.state)
+        },
+        mounted() {
+            this.resetList = this.submited
         },
         methods: {
-            onItemClick (index) {
+            showPosition: function (info, timer) {
+                this.showPositionValue = true
+                this.toastText = info
+                this.loadTime = timer
+            },
+            getExchangeList(state) {
+                console.log(state)
+                exchangeList(state).then(res => {
+                    if (res.status === 200 && res.statusText === 'OK') {
+                        const data = res.data
+                        if (data.code === '200') {
+                            this.exchangeListData = data.data
+                        }
+                    }
+                })
+            },
+            onItemClick(id) {
+                this.showPlugin(id)
+            },
+            showPlugin(id) {
+                const _this = this
+                this.$vux.confirm.show({
+                    title: '操作提示',
+                    content: '确认撤销当前委托',
+                    onCancel() {
+                    },
+                    onConfirm() {
+                        _this.getChanel(id)
+                        // 弹出loading
+                        _this.showLoadingInfo = true
+                        _this.toastText = '加载中...'
+                    }
+                })
+            },
+            getChanel(uid) {
+                exchangeChanel(uid).then(res => {
+                    if (res.status === 200 && res.statusText === 'OK') {
+                        const data = res.data
+                        this.showLoadingInfo = false
+                        this.showPosition(submit, 2000)
+                        console.log(data)
+                    } else {
+                        this.showLoadingInfo = false
+                        this.showPosition(unsubmit, 2000)
+                    }
+                })
             }
         },
-
+        filters: {
+            toUpper(val) {
+                return val.toUpperCase()
+            },
+            strIntercept(val) {
+                return val.substr(5, 14)
+            },
+            numberIntercept(val) {
+                return new Decimal(val).toFixed(6)
+            }
+        },
+        watch: {
+            submited() {
+                this.resetList = this.submited
+            },
+            resetList() {
+                if (this.resetList) {
+                    this.getExchangeList(this.state)
+                    this.$emit('reset', event)
+                    this.resetList = !this.resetList
+                }
+            }
+        },
         components: {
-            XButton
+            Confirm,
+            XButton,
+            Loading,
+            Toast
         }
     }
 </script>

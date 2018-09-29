@@ -1,8 +1,9 @@
 <template>
     <div class="m-numberinput">
         <div class="m-numberinput__area">
-            <input type="number"
-                    :value="this.numericValue"
+            <input
+                    type="number"
+                    v-bind:value="numericValue"
                     @input="oninput"
                     :class="inputClass"
                     :min="min"
@@ -91,16 +92,16 @@
         },
         methods: {
             ...mapActions([
-                'buyPrice',
-                'buyNumber'
+                'sellPrice',
+                'sellNumber'
             ]),
             saveVuexPN(value) {
                 if (this.controls === 0) {
                     // 保存价格
-                    this.buyPrice(value)
+                    this.sellPrice(value)
                 } else if (this.controls === 1) {
                     // 保存数量
-                    this.buyNumber(value)
+                    this.sellNumber(value)
                 }
             },
             formatDeciaml() {

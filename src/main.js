@@ -8,13 +8,16 @@ import i18n from './lang'
 import App from './App'
 
 // import { AlertPlugin, ToastPlugin } from 'vux'
+import { ConfirmPlugin, LoadingPlugin, ToastPlugin } from 'vux'
 /* eslint-disable import/first */
 
 import '@/assets/css/style.scss'
 import '@/assets/css/vux/vux.less'
 //
 // Vue.use(AlertPlugin)
-// Vue.use(ToastPlugin)
+Vue.use(ToastPlugin, {position: 'middle'})
+Vue.use(LoadingPlugin)
+Vue.use(ConfirmPlugin)
 
 Vue.use({
     i18n: (key, value) => i18n.t(key, value)

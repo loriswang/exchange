@@ -3,108 +3,80 @@
     <div class="m-exchange__historyorder">
         <x-header title="历史订单" :left-options="{backText: ''}">
         </x-header>
-
         <div class="m-exchange__historyorder__body">
-            <router-link to="/exchange/historyorder/show">
-            <div class="m-exchange__historyorder__body-item">
-                <div class="m-exchange__historyorder__body-item-1">
-                    <span class="m-exchange__historyorder__body-item-side m-badge m-badge--danger m-badge--wide">卖出
+            <div v-for="item in this.exchangeListData" :key="item.uuid">
+                <router-link :to="{name:'exchangeHistoryOrderShow', query: {uuid: item.uuid}}">
+                    <div class="m-exchange__historyorder__body-item">
+                        <div class="m-exchange__historyorder__body-item-1">
+                        <span v-if="item.side == buy"
+                              class="m-exchange__historyorder__body-item-side m-badge m-badge--success m-badge--wide">买入</span>
+                            <span v-else=""
+                                  class="m-exchange__historyorder__body-item-side m-badge m-badge--danger m-badge--wide">卖出</span>
+                            <span class="m-exchange__historyorder__body-item-pair">
+                        {{item.base | toUpper}}/{{item.quote | toUpper}}
                     </span>
-                    <span class="m-exchange__historyorder__body-item-pair">
-                        FBC/BTC
+                            <span v-if="item.state == 'submitted'" class="m-exchange__historyorder__body-item-status">成交</span>
+                            <span v-else="" class="m-exchange__historyorder__body-item-status m--font-warning">撤销</span>
+
+                            <span class="m-exchange__historyorder__body-item-date">
+                            {{item.created_at.date | strIntercept}}
                     </span>
-                    <span class="m-exchange__historyorder__body-item-status">
-                        成交
-                    </span>
-                    <span class="m-exchange__historyorder__body-item-date">
-                            2018-06-08 10:00:00
-                    </span>
-                </div>
-                <div class="m-exchange__historyorder__body-item-2">
+                        </div>
+                        <div class="m-exchange__historyorder__body-item-2">
 
                     <span class="m-exchange__historyorder__body-item-filled">
-                            2000
+                           {{item.price | numberIntercept}}
                     </span>
-                    <span class="m-exchange__historyorder__body-item-amount">
-                            2000
+                            <span class="m-exchange__historyorder__body-item-amount">
+                           {{item.executed_value | numberIntercept}}
                      </span>
-                </div>
-                <div class="m-exchange__historyorder__body-item-3">
+                        </div>
+                        <div class="m-exchange__historyorder__body-item-3">
                     <span class="m-exchange__historyorder__body-item-dealprice">
-                            0.000400
+                            {{item.amount | numberIntercept}}
                     </span>
-                    <span class="m-exchange__historyorder__body-item-price">
-                            0.000400
+                            <span class="m-exchange__historyorder__body-item-price">
+                            {{item.filled_amount | numberIntercept}}
                     </span>
-                </div>
-            </div>
-            </router-link>
-
-            <div class="m-exchange__historyorder__body-item">
-                <div class="m-exchange__historyorder__body-item-1">
-                    <span class="m-exchange__historyorder__body-item-side m-badge m-badge--success m-badge--wide">买入
-                    </span>
-                    <span class="m-exchange__historyorder__body-item-pair">
-                        FBC/BTC
-                    </span>
-                    <span class="m-exchange__historyorder__body-item-status m--font-warning">
-                        撤销
-                    </span>
-                    <span class="m-exchange__historyorder__body-item-date">
-                            2018-06-08 10:00:00
-                    </span>
-                </div>
-                <div class="m-exchange__historyorder__body-item-2">
-
-                    <span class="m-exchange__historyorder__body-item-filled">
-                            2000
-                    </span>
-                    <span class="m-exchange__historyorder__body-item-amount">
-                            2000
-                     </span>
-                </div>
-                <div class="m-exchange__historyorder__body-item-3">
-                    <span class="m-exchange__historyorder__body-item-dealprice">
-                            0.000400
-                    </span>
-                    <span class="m-exchange__historyorder__body-item-price">
-                            0.000400
-                    </span>
-                </div>
+                        </div>
+                    </div>
+                </router-link>
             </div>
 
-            <div class="m-exchange__historyorder__body-item">
-                <div class="m-exchange__historyorder__body-item-1">
-                    <span class="m-exchange__historyorder__body-item-side m-badge m-badge--success m-badge--wide">买入
-                    </span>
-                    <span class="m-exchange__historyorder__body-item-pair">
-                        FBC/BTC
-                    </span>
-                    <span class="m-exchange__historyorder__body-item-status">
-                        成交
-                    </span>
-                    <span class="m-exchange__historyorder__body-item-date">
-                            2018-06-08 10:00:00
-                    </span>
-                </div>
-                <div class="m-exchange__historyorder__body-item-2">
 
-                    <span class="m-exchange__historyorder__body-item-filled">
-                            2000
-                    </span>
-                    <span class="m-exchange__historyorder__body-item-amount">
-                            2000
-                     </span>
-                </div>
-                <div class="m-exchange__historyorder__body-item-3">
-                    <span class="m-exchange__historyorder__body-item-dealprice">
-                            0.000400
-                    </span>
-                    <span class="m-exchange__historyorder__body-item-price">
-                            0.000400
-                    </span>
-                </div>
-            </div>
+            <!--<div class="m-exchange__historyorder__body-item">-->
+                <!--<div class="m-exchange__historyorder__body-item-1">-->
+                    <!--<span class="m-exchange__historyorder__body-item-side m-badge m-badge&#45;&#45;success m-badge&#45;&#45;wide">买入-->
+                    <!--</span>-->
+                    <!--<span class="m-exchange__historyorder__body-item-pair">-->
+                        <!--FBC/BTC-->
+                    <!--</span>-->
+                    <!--<span class="m-exchange__historyorder__body-item-status m&#45;&#45;font-warning">-->
+                        <!--撤销-->
+                    <!--</span>-->
+                    <!--<span class="m-exchange__historyorder__body-item-date">-->
+                            <!--2018-06-08 10:00:00-->
+                    <!--</span>-->
+                <!--</div>-->
+                <!--<div class="m-exchange__historyorder__body-item-2">-->
+
+                    <!--<span class="m-exchange__historyorder__body-item-filled">-->
+                            <!--2000-->
+                    <!--</span>-->
+                    <!--<span class="m-exchange__historyorder__body-item-amount">-->
+                            <!--2000-->
+                     <!--</span>-->
+                <!--</div>-->
+                <!--<div class="m-exchange__historyorder__body-item-3">-->
+                    <!--<span class="m-exchange__historyorder__body-item-dealprice">-->
+                            <!--0.000400-->
+                    <!--</span>-->
+                    <!--<span class="m-exchange__historyorder__body-item-price">-->
+                            <!--0.000400-->
+                    <!--</span>-->
+                <!--</div>-->
+            <!--</div>-->
+
         </div>
     </div>
 </template>
@@ -204,19 +176,45 @@
 </style>
 
 <script>
-    import { XHeader, Group, Cell } from 'vux'
+    import {XHeader, Group, Cell} from 'vux'
+    import {Decimal} from 'decimal.js'
+    import {exchangeList} from '@/modules/exchange/api/get_exchange'
 
     export default {
         name: 'historyorders',
-        data () {
+        data() {
             return {
-                imgList: []
+                buy: 'buy',
+                exchangeListData: [],
+                historyState: 'history'
             }
         },
-        created () {
+        created() {
+            this.getExchangeList(this.historyState)
         },
-        methods: {},
-
+        methods: {
+            getExchangeList(state) {
+                exchangeList(state).then(res => {
+                    if (res.status === 200 && res.statusText === 'OK') {
+                        const data = res.data
+                        if (data.code === '200') {
+                            this.exchangeListData = data.data
+                        }
+                    }
+                })
+            }
+        },
+        filters: {
+            toUpper(val) {
+                return val.toUpperCase()
+            },
+            strIntercept(val) {
+                return val.substr(0, 19)
+            },
+            numberIntercept(val) {
+                return new Decimal(val).toFixed(6)
+            }
+        },
         components: {
             Group,
             XHeader,
