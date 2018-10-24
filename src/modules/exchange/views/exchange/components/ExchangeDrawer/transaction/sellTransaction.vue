@@ -50,6 +50,7 @@
 </template>
 <script type="text/ecmascript-6">
     import {XButton} from 'vux'
+    import axios from 'axios'
     import {mapState, mapActions} from 'vuex'
     import {sendMessage} from '@/modules/exchange/api/get_exchange'
     import {Decimal} from 'decimal.js'
@@ -63,6 +64,7 @@
         name: 'SellTransaction',
         data() {
             return {
+                cancelTokenFn: null,
                 localWallet: null, // 接收到vuex中wallet保存到localWallet
                 componentSelectData: null,  // 当前交易货币交易信息zl/test
                 quote_currency_price: null, // 标价货币值(sellP)
@@ -186,7 +188,6 @@
                 const realTotal = new Decimal(realTimePrice).mul(new Decimal(realTimeNumber)).toNumber()
                 this.totalP = realTotal
                 if (this.inputNum > this.maxInputNum) {
-//                    this.showPosition(noEnough, 2000)
                     this.showToast(noEnough, 'warn')
                     this.submitFlag = false
                     return this.submitFlag
@@ -205,41 +206,56 @@
                     price: this.sellPrice,
                     amount: this.sellNumber
                 }
-                sendMessage(this.submitData).then((res) => {
-                    if (res.status === 200 && res.statusText === 'OK') {
-                        if (res.data.code === '200') {
-                            const data = res.data.data
-                            if (data.state === 'submitted') {
-                                this.showToast('已提交!', 'srccess')
-                                this.hideloading()
-                                this.$emit('submiting', event)
+                const _this = this
+                const CancelToken = axios.CancelToken
+
+                this.cancelTokenFn && this.cancelTokenFn()
+                this.cancelTokenFn = null
+                sendMessage(this.submitData, {cancelToken: new CancelToken(function executor(c) {
+                    _this.cancelTokenFn = c
+                })})
+                    .then((res) => {
+                        if (res.status === 200) {
+                            if (res.data.code === '200') {
+                                const data = res.data.data
+                                if (data.state === 'submitted') {
+                                    this.showToast('已提交!', 'srccess')
+                                    this.hideloading()
+                                    this.$emit('submiting', event)
+                                } else {
+                                    this.showToast('未提交!', 'warn')
+                                    this.hideloading()
+                                }
                             } else {
-                                this.showToast('未提交!', 'warn')
-                                this.showLoadingInfo = false
+                                this.showToast('提交失败!', 'warn')
+                                this.hideloading()
                             }
                         } else {
-                            this.showToast('提交失败!', 'warn')
-                            this.showLoadingInfo = false
+                            this.showToast('网络错误!', 'warn')
+                            this.hideloading()
                         }
-                    } else {
-                        this.showToast('网络错误!', 'warn')
-                        this.showLoadingInfo = false
-                    }
-                })
+                    })
+                    .catch(err => {
+                        console.log(err)
+                    })
             },
 //            判断点击按钮是否可用
             judgeBtn() {
+                console.log(1)
                 if (this.realTime()) {
+                    console.log(2)
                     if (this.sellPrice === null || this.sellPrice === 0) {
-//                        this.showPosition(noEnoughPrice, 2000)
+                        console.log(3)
                         this.showToast(noEnoughPrice)
                         this.submitFlag = false
                     } else {
+                        console.log(4)
                         if (this.sellNumber === null || this.sellNumber === 0) {
-//                            this.showPosition(noEnoughNum, 2000)
+                            console.log(5)
                             this.showToast(noEnoughNum)
                             this.submitFlag = false
                         } else {
+                            console.log(6)
                             this.submitFlag = true
                             this.sendMessage()
                         }

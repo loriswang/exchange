@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div>8{{this.exchangePrice}}
         <!--价格-->
         <NumberInput
                 :min="0"
@@ -23,7 +23,6 @@
                 :len="this.amount_len"
                 :remainderWallet="this.maxInputNum"
         />
-
         <div class="m-exchange__tradepanel-available" v-if="this.nowCurrencyBalance">
             <span class="m-exchange__tradepanel-available-text">
                 可用
@@ -68,8 +67,8 @@
                 quote_currency_price: null, // 当前交易实时金额(sellP)
                 base_currency: '',  // 基准货币单位:zl
                 quote_currency: '', // 标价货币单位:test
-                nowCurrencyBalance: null,    // 当前交易基本货币个人余额(标价)
-                nowCurrencyBalanceNum: null,    // 基本(标价)余额test:1968.00000000(小数点已格式化)
+                nowCurrencyBalance: null,    // 当前交易基本货币个人余额
+                nowCurrencyBalanceNum: null,    // 余额test:1968.00000000(小数点已格式化)
                 stepQuote: '',    // 价格每次i++的值
                 stepAmount: '', // 数量每次i++的值
                 quote_len: 0, // 价格保留小数点的位数
@@ -83,22 +82,25 @@
                 submitData: null
             }
         },
-        props: {
-            selectData: {},
-            tabIndex: {},
-            buyP: {
-                type: Number
-            }
-        },
+        props: [
+//            当前交易数据
+            'selectData',
+//            买入/卖出
+            'tabIndex'
+//            价格
+//            'buyP'
+        ],
         created() {
-//            this.searchCurrency()
-//            this.toDecimalN()
-//            this.formatWalletLength()
         },
         mounted() {
             if (this.wallet) {
                 this.localWallet = this.wallet
             }
+            if (this.selectBuyWallet) {
+                this.forSearchCurrencyBalance()
+            }
+        },
+        updated() {
         },
         methods: {
             ...mapActions([
@@ -123,35 +125,6 @@
                     time: 3000
                 })
             },
-//            查找当前交易信息对应钱包货币种类(基准)
-            forSearchCurrencyBalance(currency, currencyB, currencyBN) {
-                for (let i = 0; i < this.localWallet.length; i++) {
-                    if (this.localWallet[i].currency === this.componentSelectData[currency]) {
-                        this[currencyB] = this.localWallet[i]
-                        this[currencyBN] = new Decimal(this[currencyB].available).toFixed(8)
-                    }
-                }
-            },
-//            设置基准货币单位, 价格/数量保留小数点
-            searchCurrency() {
-                if (this.componentSelectData) {
-//                    根据当前交易信息获取:
-//                    单位
-                    this.base_currency = this.componentSelectData.base_currency
-                    this.quote_currency = this.componentSelectData.quote_currency
-//                    小数点
-                    this.quote_len = this.componentSelectData.price_precision
-                    this.amount_len = this.componentSelectData.amount_precision
-                    this.totalPrice_len = this.componentSelectData.total_precision
-//                    查找当前交易信息对应钱包余额(标价)
-                    this.forSearchCurrencyBalance('quote_currency', 'nowCurrencyBalance', 'nowCurrencyBalanceNum')
-                }
-            },
-            calcMaxInputNum() {
-                const sellPrice = this.quote_currency_price
-                const maxInputNumber = new Decimal(this.nowCurrencyBalanceNum).div(sellPrice)
-                this.toDecimalN(maxInputNumber, this.amount_len, 'maxInputNum')
-            },
 //            保留指定浮点数位数
             toDecimalN(num, len, key) {
                 const number = num.toString()
@@ -166,16 +139,40 @@
                     this[key] = f.toFixed(len)
                 }
             },
-//            格式化价格长度单位
-            formatWalletLength() {
-                this.toDecimalN(this.buyP, this.quote_len, 'quote_currency_price')
-            },
 //            设置价格每次 ++ || -- 的最小单位
             setQuoteStepValue(k, val) {
                 const len = this.componentSelectData[val]
-//                const baseNumber = new Decimal(0.1).toPower(len)
                 const baseNumber = Math.pow(0.1, len)
                 this[k] = new Decimal(baseNumber).toFixed(len)
+            },
+//            保存当前交易余额到组件
+            forSearchCurrencyBalance() {
+                this.nowCurrencyBalance = this.selectBuyWallet
+                const price = this.nowCurrencyBalance.available
+                this.nowCurrencyBalanceNum = new Decimal(price).toFixed(8)
+            },
+//            计算最大输入值
+            calcMaxInputNum() {
+                const sellPrice = new Decimal(this.quote_currency_price)
+                const maxInputNumber = new Decimal(this.nowCurrencyBalanceNum).div(sellPrice)
+                this.toDecimalN(maxInputNumber, this.amount_len, 'maxInputNum')
+            },
+//            格式化价格长度单位
+            formatWalletLength() {
+                this.toDecimalN(this.exchangePrice, this.quote_len, 'quote_currency_price')
+            },
+//            设置基准货币单位, 价格/数量保留小数点
+            searchCurrency() {
+                if (this.componentSelectData) {
+//                    根据当前交易信息获取:
+//                    单位
+                    this.base_currency = this.componentSelectData.base_currency
+                    this.quote_currency = this.componentSelectData.quote_currency
+//                    小数点
+                    this.quote_len = this.componentSelectData.price_precision
+                    this.amount_len = this.componentSelectData.amount_precision
+                    this.totalPrice_len = this.componentSelectData.total_precision
+                }
             },
 //            获取当前价格和数量进行计算(余额不足提示)
             realTime() {
@@ -198,7 +195,7 @@
             },
 //            发送信息,执行loading状态加载
             sendMessage() {
-                this.showloading()
+//                this.showloading()
                 this.submitData = {
                     symbol: this.componentSelectData.symbol,
                     side: 'buy',
@@ -206,27 +203,37 @@
                     price: this.buyPrice,
                     amount: this.buyNumber
                 }
-                sendMessage(this.submitData).then((res) => {
-                    if (res.status === 200 && res.statusText === 'OK') {
-                        if (res.data.code === '200') {
-                            const data = res.data.data
-                            if (data.state === 'submitted') {
-                                this.showToast('已提交!', 'srccess')
-                                this.hideloading()
-                                this.$emit('submiting', event)
+//                const _this = this
+//                const CancelToken = axios.CancelToken
+//
+//                this.cancelTokenFn && this.cancelTokenFn()
+//                this.cancelTokenFn = null
+                sendMessage(this.submitData)
+                    .then((res) => {
+                        if (res.status === 200) {
+                            if (res.data.code === '200') {
+                                const data = res.data.data
+                                if (data.state === 'submitted') {
+                                    console.log('submit')
+//                                    this.showToast('已提交!', 'srccess')
+//                                    this.hideloading()
+                                    this.$emit('submiting', event)
+                                } else {
+//                                    this.showToast('未提交!', 'warn')
+//                                    this.hideloading()
+                                }
                             } else {
-                                this.showToast('未提交!', 'warn')
-                                this.showLoadingInfo = false
+//                                this.showToast('提交失败!', 'warn')
+//                                this.hideloading()
                             }
                         } else {
-                            this.showToast('提交失败!', 'warn')
-                            this.showLoadingInfo = false
+//                            this.showToast('网络错误!', 'warn')
+//                            this.hideloading()
                         }
-                    } else {
-                        this.showToast('网络错误!', 'warn')
-                        this.showLoadingInfo = false
-                    }
-                })
+                    })
+                    .catch(err => {
+                        console.log(err)
+                    })
             },
 //            判断点击按钮是否可用
             judgeBtn() {
@@ -275,18 +282,24 @@
                 this.toDecimalN(this.totalP, this.totalPrice_len, 'totalPrice')
                 this.buyTotalPrice(this.totalPrice)
             },
+//            --------------
             wallet() {
                 this.localWallet = this.wallet
             },
             localWallet() {
                 this.searchCurrency()   // 设置当前交易单位
+            },
+            selectBuyWallet() {
+                this.forSearchCurrencyBalance()
             }
         },
         computed: {
             ...mapState({
                 wallet: state => state.user.wallet,
                 buyPrice: state => state.exchange.buyPrice,
-                buyNumber: state => state.exchange.buyNumber
+                buyNumber: state => state.exchange.buyNumber,
+                exchangePrice: state => state.exchange.exchangePrice,
+                selectBuyWallet: state => state.exchange.selectBuyWallet
             })
         },
         components: {

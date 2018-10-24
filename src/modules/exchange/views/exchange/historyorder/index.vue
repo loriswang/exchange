@@ -15,7 +15,7 @@
                             <span class="m-exchange__historyorder__body-item-pair">
                         {{item.base | toUpper}}/{{item.quote | toUpper}}
                     </span>
-                            <span v-if="item.state == 'submitted'" class="m-exchange__historyorder__body-item-status">成交</span>
+                            <span v-if="item.state == 'filled'" class="m-exchange__historyorder__body-item-status">成交</span>
                             <span v-else="" class="m-exchange__historyorder__body-item-status m--font-warning">撤销</span>
 
                             <span class="m-exchange__historyorder__body-item-date">
@@ -43,40 +43,8 @@
                 </router-link>
             </div>
 
-
-            <!--<div class="m-exchange__historyorder__body-item">-->
-                <!--<div class="m-exchange__historyorder__body-item-1">-->
-                    <!--<span class="m-exchange__historyorder__body-item-side m-badge m-badge&#45;&#45;success m-badge&#45;&#45;wide">买入-->
-                    <!--</span>-->
-                    <!--<span class="m-exchange__historyorder__body-item-pair">-->
-                        <!--FBC/BTC-->
-                    <!--</span>-->
-                    <!--<span class="m-exchange__historyorder__body-item-status m&#45;&#45;font-warning">-->
-                        <!--撤销-->
-                    <!--</span>-->
-                    <!--<span class="m-exchange__historyorder__body-item-date">-->
-                            <!--2018-06-08 10:00:00-->
-                    <!--</span>-->
-                <!--</div>-->
-                <!--<div class="m-exchange__historyorder__body-item-2">-->
-
-                    <!--<span class="m-exchange__historyorder__body-item-filled">-->
-                            <!--2000-->
-                    <!--</span>-->
-                    <!--<span class="m-exchange__historyorder__body-item-amount">-->
-                            <!--2000-->
-                     <!--</span>-->
-                <!--</div>-->
-                <!--<div class="m-exchange__historyorder__body-item-3">-->
-                    <!--<span class="m-exchange__historyorder__body-item-dealprice">-->
-                            <!--0.000400-->
-                    <!--</span>-->
-                    <!--<span class="m-exchange__historyorder__body-item-price">-->
-                            <!--0.000400-->
-                    <!--</span>-->
-                <!--</div>-->
-            <!--</div>-->
-
+            <div class="listNone" v-if="this.exchangeListData.length === 0">暂无订单</div>
+            <div class="empty_space"></div>
         </div>
     </div>
 </template>
@@ -156,6 +124,13 @@
                 }
 
             }
+            .listNone{
+                text-align: center;
+                padding: 1rem 0;
+            }
+            .empty_space {
+                height: 6rem;
+            }
         }
 
         .m-badge.m-badge--wide {
@@ -179,6 +154,7 @@
     import {XHeader, Group, Cell} from 'vux'
     import {Decimal} from 'decimal.js'
     import {exchangeList} from '@/modules/exchange/api/get_exchange'
+    import {showloadings, hideloadings} from '@/utils/load'
 
     export default {
         name: 'historyorders',
@@ -186,19 +162,28 @@
             return {
                 buy: 'buy',
                 exchangeListData: [],
-                historyState: 'history'
+                historyState: 'history',
+                tips: true
             }
         },
         created() {
-            this.getExchangeList(this.historyState)
+        },
+        beforeRouteEnter(from, to, next) {
+            next(vm => {
+                vm.getExchangeList(vm.historyState)
+            })
+        },
+        mounted() {
         },
         methods: {
-            getExchangeList(state) {
-                exchangeList(state).then(res => {
-                    if (res.status === 200 && res.statusText === 'OK') {
+            getExchangeList() {
+                showloadings()
+                exchangeList(this.historyState).then(res => {
+                    if (res.status === 200) {
                         const data = res.data
                         if (data.code === '200') {
                             this.exchangeListData = data.data
+                            hideloadings()
                         }
                     }
                 })
@@ -214,6 +199,8 @@
             numberIntercept(val) {
                 return new Decimal(val).toFixed(6)
             }
+        },
+        watch: {
         },
         components: {
             Group,

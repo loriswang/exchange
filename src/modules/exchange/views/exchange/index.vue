@@ -14,7 +14,6 @@
                 </exchange-drawer>
             </div>
             <div>
-                <!--<router-view></router-view>-->
             </div>
             <div body-padding-bottom="55px">
                 <div class="m-exchange">
@@ -33,15 +32,8 @@
                      </span>
                     </x-header>
                     <div class="m-exchange__trade">
-                        <div class="m-exchange__orderbook-ticker">
-                            <h1 class="m-exchange__orderbook-ticker-price m--font-success">
-                                {{this.buyP}}
-                            </h1>
-                            <span class="m-exchange__orderbook-ticker-rmb">
-                                ≈ 0 CNY
-                            </span>
-                        </div>
-
+                        <!--价钱/盘口信息-->
+                        <top-price></top-price>
                         <handicap :handicapData="handicapData"></handicap>
 
                         <div class="m-exchange__tradepanel">
@@ -55,21 +47,21 @@
                                     </tab-item>
                                 </tab>
                             </div>
-                            <!--买入-->
                             <div v-show="this.tab_index === 0">
-                                <Buy-transaction :selectData='this.selectData' :tabIndex='this.tab_index'
-                                                 :buyP="this.buyP" @submiting="refreshing">
-                                </Buy-transaction>
+                                <Buy :tabIndex='this.tab_index'
+                                     @submiting="refreshing">
+                                </Buy>
                             </div>
-                            <!--卖出-->
                             <div v-show="this.tab_index === 1">
-                                <Sell-transaction :selectData='this.selectData' :tabIndex='this.tab_index'
-                                                  :sellP="this.sellP" @submiting="refreshing">
-                                </Sell-transaction>
+                                <Sell :tabIndex='this.tab_index'
+                                      @submiting="refreshing">
+                                </Sell>
                             </div>
                         </div>
+
                     </div>
-                    <open-orders :submited="submited" @reset="resetSubmited" disabled></open-orders>
+                    <open-orders :submited="submited" @submiting="refreshing" @reset="resetSubmited"
+                                 disabled></open-orders>
                 </div>
             </div>
 
@@ -297,6 +289,34 @@
                     }
                 }
 
+                .router-wrapper {
+                    display: flex;
+                    margin: 1rem 0;
+                    .router_item_buy, .router_item_sell {
+                        flex: 1;
+                        text-align: center;
+                        .buy_item, .sell_item {
+                            padding: 1rem 0;
+                            font-size: 1.2rem;
+                            font-weight: bold;
+                            color: #CCC;
+                            border-bottom: 3px solid #ffffff;
+                        }
+                    }
+                    .router-link-active {
+                        .buy_item {
+                            font-size: 1.5rem;
+                            color: #3dbea3;
+                            border-bottom: 3px solid #3dbea3;
+                        }
+                        .sell_item {
+                            font-size: 1.5rem;
+                            color: #f4516c;
+                            border-bottom: 3px solid #f4516c;
+                        }
+                    }
+                }
+
             }
 
         }
@@ -306,17 +326,16 @@
 <script>
     import {TransferDom, XHeader, XButton, Group, Cell, Tab, TabItem, Drawer} from 'vux'
     import {mapState, mapActions} from 'vuex'
+    import {showloadings, hideloadings} from '@/utils/load'
     import {getSymbols, getHandicap, getPrice} from '@/modules/exchange/api/get_exchange'
     import {getAssets} from '@/modules/user/api/get_user'
     import NumberInput from '@/components/NumberInput/NumberInput'
+    import TopPrice from './components/topPrice/topPrice.vue'
     import Handicap from './components/handicap/handicap.vue'
-    import BuyTransaction from './components/ExchangeDrawer/transaction/buyTransaction.vue'
-    import SellTransaction from './components/ExchangeDrawer/transaction/sellTransaction.vue'
+    import Buy from './components/ExchangeDrawer/transaction/buy.vue'
+    import Sell from './components/ExchangeDrawer/transaction/sell.vue'
     import OpenOrders from './components/OpenOrders/OpenOrders.vue'
     import ExchangeDrawer from './components/ExchangeDrawer/ExchangeDrawer.vue'
-
-    //    const sellP = 20.038448596849
-    //    const buyP = 250.439448596849
 
     export default {
         name: 'Home',
@@ -331,112 +350,134 @@
                 showModeValue: 'overlay',
                 showPlacement: 'left',
                 showPlacementValue: 'left',
-                exchangeList: [],
-                selectIndex: 0,
-                selectData: null,
-                sellP: 0,
-                buyP: 1,
+                exchangeList: [],   // 币兑交易列表
+                selectIndex: 0, // 当前展示交易币兑下标
+                selectData: null,   // 当前展示交易币兑
                 submited: false,
                 handicapData: null
             }
         },
         created() {
-            this.calcTime()
-            this.getSymbolsData()
+        },
+        // 对应该组件的路由被确认之前，此时还未创建组件实例
+        beforeRouteEnter: function (to, from, next) {
+            next(vm => {
+//                刷新币兑
+                vm.getSymbolsData()
+//                刷新价格,盘口,余额,委托列表
+                vm.refreshing()
+//                设置盘口计时器
+                window.timerHandicap = setInterval(() => {
+                    vm.gethandicapData()
+                }, 50000)
+//                设置价格计时器
+                window.timerPrice = setInterval(() => {
+                    vm.getPriceData()
+                }, 50000)
+            })
+        },
+        // 即将离开对应该组件的路由时
+        beforeRouteLeave: function (to, from, next) {
+//            离开当前页面,清空计时器
+            if (from.path === '/exchange') {
+                clearInterval(window.timerHandicap)
+                clearInterval(window.timerPrice)
+            }
+            next()
+        },
+        mounted() {
+        },
+        beforeMount() {
+//            this.forSearchSelectWallet()
         },
         methods: {
             ...mapActions([
-                'setWallet'
+                'setWallet',
+                'topPrice',
+                'selectSymbol',
+                'selectBuyWallet',
+                'selectSellWallet'
             ]),
-//            loading提示
-            showloading() {
-                this.$vux.loading.show({
-                    text: '加载中...'
-                })
-            },
-            hideloading() {
-                this.$vux.loading.hide()
-            },
             handleToggleSliderNav() {
                 this.drawerVisibility = !this.drawerVisibility
             },
             onItemClick(index) {
                 if (this.tab_index === index) return
                 this.tab_index = index
-//                console.log(index)
-            },
-//            计时器
-            calcTime() {
-                setInterval(this.gethandicapData, 20000)
-                setInterval(this.getPriceData, 20000)
             },
 //            获取盘口信息
             gethandicapData() {
-                const _this = this
                 getHandicap().then(res => {
-                    if (res.status === 200 && res.statusText === 'OK') {
+                    if (res.status === 200) {
                         if (res.data.code === '200') {
                             const data = res.data.data
-                            _this.handicapData = data
+                            this.handicapData = data
                         }
                     }
                 })
             },
 //            获取价格信息
             getPriceData() {
-                const _this = this
                 getPrice().then(res => {
-                    if (res.status === 200 && res.statusText === 'OK') {
+                    if (res.status === 200) {
                         if (res.data.code === '200') {
                             const data = res.data.data
-                            _this.buyP = data.last
-                            _this.sellP = data.last
+                            this.topPrice(data)
                         }
                     }
                 })
             },
 //            请求交易数据
             getSymbolsData() {
-                this.loadingNum -= 1
                 getSymbols().then((res) => {
-//                    console.log(res)
-                    if (res.status === 200 && res.statusText === 'OK') {
+                    if (res.status === 200) {
                         this.exchangeList = res.data.data
                         this.transferSelectData(this.selectIndex)
-                        this.loadingNum += 1
                     }
                 })
             },
+//            切换交易币兑下标
             getSelectIndex(i) {
-//                console.log(i)
                 this.selectIndex = i
                 this.transferSelectData(this.selectIndex)
             },
 //            筛选当前交易币兑
             transferSelectData(i) {
-//                console.log(this.exchangeList[i])
                 this.selectData = this.exchangeList[i]
+                this.selectSymbol(this.exchangeList[i])
+                this.forSearchSelectWallet()
+            },
+//            查找买入和卖出时可用的货币余额, 保存在vuex中
+            forSearchSelectWallet() {
+                for (let i = 0; i < this.wallet.length; i++) {
+                    if (this.wallet[i].currency === this.selectData.quote_currency) {
+                        this.selectBuyWallet(this.wallet[i])
+                    } else if (this.wallet[i].currency === this.selectData.base_currency) {
+                        this.selectSellWallet(this.wallet[i])
+                    }
+                }
             },
 //            获取钱包余额
             ajaxWallet() {
                 getAssets().then((res) => {
-                    if (res.status === 200 && res.statusText === 'OK') {
+                    if (res.status === 200) {
                         let data = res.data.data
-                        console.log(700)
                         this.setWallet(data)
-                        this.submited = true
                     }
                 })
             },
             refreshing() {
-                console.log(800)
+                this.getPriceData()
+                this.gethandicapData()
                 this.ajaxWallet()
+                this.submited = true
             },
 //            列表刷新完成,还原状态
             resetSubmited() {
-                console.log('reset')
                 this.submited = false
             }
+        },
+        beforeDestroy() {
         },
         directives: {
             TransferDom
@@ -452,11 +493,16 @@
             })
         },
         watch: {
+            wallet() {
+                if (this.selectData) {
+                    this.forSearchSelectWallet()
+                }
+            },
             loadingNum() {
                 if (this.loadingNum === 8) {
-                    this.hideloading()
+                    hideloadings()
                 } else {
-                    this.showloading()
+                    showloadings()
                 }
             }
         },
@@ -471,9 +517,10 @@
             Drawer,
             OpenOrders,
             ExchangeDrawer,
+            TopPrice,
             Handicap,
-            BuyTransaction,
-            SellTransaction
+            Buy,
+            Sell
         }
     }
 </script>

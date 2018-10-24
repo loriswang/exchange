@@ -7,12 +7,12 @@
         </div>
 
         <tabbar class="m-tabbar" icon-class="vux-center" v-show="showTabbar" slot="bottom">
-            <tabbar-item :link="{path:'/home'}" :selected="$route.path === '/home'" class="m-tabbar__item">
-                <span class="m-tabbar__item_icon" slot="icon">
-                    <i class="mcicon-home"></i>
-                </span>
-                <span class="m-tabbar__item_label" slot="label">首页</span>
-            </tabbar-item>
+            <!--<tabbar-item :link="{path:'/home'}" :selected="$route.path === '/home'" class="m-tabbar__item">-->
+                <!--<span class="m-tabbar__item_icon" slot="icon">-->
+                    <!--<i class="mcicon-home"></i>-->
+                <!--</span>-->
+                <!--<span class="m-tabbar__item_label" slot="label">首页</span>-->
+            <!--</tabbar-item>-->
             <tabbar-item :link="{path:'/exchange'}" :selected="$route.path === '/exchange'" class="m-tabbar__item">
                 <span class="m-tabbar__item_icon" slot="icon">
                     <i class="mcicon-hot"></i>
@@ -31,6 +31,18 @@
                 </span>
                 <span class="m-tabbar__item_label" slot="label">我的</span>
             </tabbar-item>
+            <tabbar-item href="https://m.fbank.io/" class="m-tabbar__item">
+                <span class="m-tabbar__item_icon" slot="icon">
+                    <i class="mcicon-trade"></i>
+                </span>
+                <span class="m-tabbar__item_label" slot="label">Fbank</span>
+            </tabbar-item>
+            <!--<tabbar-item :link="{path:'/user'}" :selected="$route.path === '/user'" class="m-tabbar__item">-->
+                <!--<span class="m-tabbar__item_icon" slot="icon">-->
+                    <!--<i class="mcicon-trade"></i>-->
+                <!--</span>-->
+                <!--<span class="m-tabbar__item_label" slot="label">Fbank</span>-->
+            <!--</tabbar-item>-->
 
         </tabbar>
     </div>

@@ -2,13 +2,13 @@
     <div class="m-numberinput">
         <div class="m-numberinput__area">
             <input type="number"
-                    :value="this.numericValue"
-                    @input="oninput"
-                    :class="inputClass"
-                    :min="min"
-                    :max="max"
-                    :step="this.step"
-                    debounce="500"
+                   :value="this.numericValue"
+                   @input="oninput"
+                   :class="inputClass"
+                   :min="min"
+                   :max="max"
+                   :step="this.step"
+                   debounce="500"
             />
             <span class="m-numberinput__area-text">{{this.unit}}</span>
         </div>
@@ -119,7 +119,9 @@
 //            -----------------输入--------------------
 //            判断输入时小数点后位数,超出不允许输入
             oninput(e) {
-                e.target.value = (e.target.value.match(/^\d*(\.?\d{0,4})/g)[0]) || null
+                // eslint-disable-next-line
+                const re = new RegExp("^\\d*(\\.?\\d{0," + this.len + "})","g")
+                e.target.value = (e.target.value.match(re)[0]) || null
                 this.numericValue = e.target.value
             },
 //            ---------------------四分之一------------------------

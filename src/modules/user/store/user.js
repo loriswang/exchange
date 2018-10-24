@@ -4,14 +4,16 @@ const user = {
         token: '',
         email: '',
         mobile: '',
-        wallet: []
+        wallet: [],
+        showWallet: {}
     },
     getters: {
         user: state => state.user,
         token: state => state.token,
         email: state => state.email,
         mobile: state => state.mobile,
-        wallet: state => state.wallet
+        wallet: state => state.wallet,
+        showWallet: state => state.showWallet
     },
     mutations: {
         SET_USER: (state, user) => {
@@ -28,6 +30,9 @@ const user = {
         },
         SET_WALLET: (state, wallet) => {
             state.wallet = wallet
+        },
+        SET_SHOWWALLET: (state, showWallet) => {
+            state.showWallet = showWallet
         }
     },
     actions: {
@@ -45,8 +50,10 @@ const user = {
             commit('SET_MOBILE', mobile)
         },
         setWallet({commit}, wallet) {
-            console.log(600)
             commit('SET_WALLET', wallet)
+        },
+        showWallet({commit}, showWallet) {
+            commit('SET_SHOWWALLET', showWallet)
         }
     }
 }

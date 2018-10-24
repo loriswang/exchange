@@ -8,16 +8,22 @@
             <div class="m-exchange__historyordershow-head">
                 <div class="m-exchange__historyordershow-head-caption">
                     <div class="m-exchange__historyordershow-head-title">
-                        <span class="m-badge m-badge--danger m-badge--wide">
-                            {{this.exchangeListData.side | judgeBuy}}
+                        <span v-if="this.exchangeListData.side === 'sell'"
+                              class="m-badge m-badge--danger m-badge--wide">
+                            卖出
+                        </span>
+                        <span v-else="" class="m-badge m-badge--success m-badge--wide">
+                            买入
                         </span>
                         <span>
                             {{this.exchangeListData.base | toUpper}}/{{this.exchangeListData.quote | toUpper}}
                         </span>
                     </div>
                     <div class="m-exchange__historyordershow-head-desc">
-                        成交(100%)
-                        <span class="m--font-warning">
+                        <span v-if="this.exchangeListData.state == 'filled'" class="">
+                            成交(100%)
+                        </span>
+                        <span v-else="" class="m--font-warning">
                             撤单
                         </span>
                     </div>
@@ -91,12 +97,12 @@
             </div>
         </div>
 
-        <div class="m-exchange__historyorderfilllist">
+        <div class="m-exchange__historyorderfilllist" v-if="this.dealListData.data">
             <div class="m-exchange__historyorderfilllist__head">
                 <div class="m-exchange__historyorderfilllist__head-caption">
                     <div class="m-exchange__historyorderfilllist__head-title">
                         <h2 class="m-exchange__historyorderfilllist__head-text">
-                            成交详情{{this.uuid}}
+                            成交详情
                         </h2>
                     </div>
                 </div>
@@ -125,25 +131,25 @@
                     </div>
                 </div>
 
-                <div class="m-exchange__historyorderfilllist__body-item">
+                <div class="m-exchange__historyorderfilllist__body-item"
+                     v-for="item in this.dealListData.data">
                     <div class="m-exchange__historyorderfilllist__body-item-1">
                       <span class="m-exchange__historyorderfilllist__body-item-date">
-                            {{this.exchangeListData.created_at.date | strIntercept}}
+                            {{item.created_at.date | strIntercept}}
                         </span>
 
                     </div>
                     <div class="m-exchange__historyorderfilllist__body-item-2">
                           <span class="m-exchange__historyorderfilllist__body-item-amount">
-                            {{this.exchangeListData.filled_price | numberIntercept}}
+                            {{item.price | numberIntercept}}
                         </span>
                     </div>
                     <div class="m-exchange__historyorderfilllist__body-item-3">
                         <span class="m-exchange__historyorderfilllist__body-item-price">
-                            {{this.exchangeListData.filled_amount | numberIntercept}}
+                            {{item.amount | numberIntercept}}
                         </span>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -450,31 +456,59 @@
 <script>
     import {XHeader, Group, Cell} from 'vux'
     import {Decimal} from 'decimal.js'
-    import {exchangeItem} from '@/modules/exchange/api/get_exchange'
+    import {exchangeItem, dealList} from '@/modules/exchange/api/get_exchange'
+    import {showloadings, hideloadings} from '@/utils/load'
 
     export default {
         name: 'User',
         data() {
             return {
+                loadingNum: 8,
                 uuid: null,
-                exchangeListData: null
+                exchangeListData: null,
+                dealListData: null
             }
         },
         created() {
             this.ready()
+        },
+        beforeRouteEnter(to, from, next) {
+            // 在渲染该组件的对应路由被 confirm 前调用
+            // 不！能！获取组件实例 `this`
+            // 因为当守卫执行前，组件实例还没被创建
+            next(vm => {
+                // 通过 `vm` 访问组件实例
+                vm.ready()
+            })
         },
         methods: {
             ready() {
                 this.uuid = this.$route.query.uuid
                 // 请求数据并替换data数据
                 this.getExchangeList(this.uuid)
+                this.getDealList(this.uuid)
             },
             getExchangeList(id) {
+                this.loadingNum -= 1
                 exchangeItem(id).then(res => {
-                    if (res.status === 200 && res.statusText === 'OK') {
+                    if (res.status === 200) {
                         const data = res.data
                         if (data.code === '200') {
                             this.exchangeListData = data.data
+                            this.loadingNum += 1
+                        }
+                    }
+                })
+            },
+            getDealList(id) {
+                this.loadingNum -= 1
+                dealList(id).then(res => {
+                    if (res.status === 200) {
+                        if (res.data.code === '200') {
+                            this.loadingNum += 1
+                            const data = res.data
+                            console.log(data)
+                            this.dealListData = data
                         }
                     }
                 })
@@ -489,15 +523,16 @@
             },
             numberIntercept(val) {
                 return new Decimal(val).toFixed(8)
-            },
-            judgeBuy(val) {
-                return (val === 'buy') ? '买入' : '卖出'
             }
 //            计算手续费单位
         },
         watch: {
-            '$route'() {
-                this.ready()
+            loadingNum() {
+                if (this.loadingNum === 8) {
+                    hideloadings()
+                } else {
+                    showloadings()
+                }
             }
         },
         components: {

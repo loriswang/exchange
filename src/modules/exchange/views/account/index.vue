@@ -14,19 +14,18 @@
                     估值（BTC)
                 </span>
                 <span class="m-account__info-balance">
-                    2.10888555
+                    0
                 </span>
                 <span class="m-account__info-balance-local">
-                    ≈120088 CNY
+                    ≈ 0 CNY
                 </span>
             </div>
         </group>
-
         <group class="m-account__list" v-if="this.assetsList">
             <cell @click.native="getDescribe(item)" v-for="item in this.assetsList" :key="item.currency">
                 <div slot="title">
                     <span class="m-account__list_code">{{item.currency}}</span>
-                    <span class="m-account__list-name">({{item.fullName}})</span>
+                    <!--<span class="m-account__list-name">({{item.fullName}})</span>-->
                 </div>
                 <span slot="icon" class="m-account__list-icon">
                     <img :src='item.src'>
@@ -35,20 +34,6 @@
                     {{item.available}}
                 </span>
             </cell>
-
-            <!--<cell is-link link="/account/show">-->
-            <!--<div slot="title">-->
-            <!--<span class="m-account__list_code">FBC</span>-->
-            <!--<span class="m-account__list-name">(Fortune Coin)</span>-->
-            <!--</div>-->
-            <!--<span slot="icon" class="m-account__list-icon">-->
-            <!--<img src="~@/assets/img/currency/fbc.png">-->
-            <!--</span>-->
-            <!--<span class="m-account__list-total">-->
-            <!--1800000.00-->
-            <!--</span>-->
-            <!--</cell>-->
-
         </group>
 
     </div>
@@ -140,7 +125,9 @@
 
 <script>
     import {XHeader, Group, Cell} from 'vux'
-    import {mapState} from 'vuex'
+    import {mapState, mapActions} from 'vuex'
+    import {getAssets} from '@/modules/user/api/get_user'
+    import {showloadings, hideloadings} from '@/utils/load'
 
     const imgSrc = {
         FBC: {
@@ -182,13 +169,23 @@
             }
         },
         created() {
-            this.getAssets()
+//            this.getAssetsData()
+        },
+        beforeRouteEnter(from, to, next) {
+            next(vm => {
+                vm.getAssetsData()
+            })
         },
         methods: {
+            ...mapActions([
+                'showWallet',
+                'setWallet'
+            ]),
             linkFinance() {
                 this.$router.push({path: '/finance'})
             },
             getDescribe(item) {
+                this.showWallet(item)
                 this.$router.push({
                     path: '/account/show',
                     query: {
@@ -196,9 +193,16 @@
                     }
                 })
             },
-            getAssets() {
-                let data = this.addText(this.wallet)
-                this.assetsList = data
+            getAssetsData() {
+                showloadings()
+                getAssets().then((res) => {
+                    if (res.status === 200) {
+                        const data = this.addText(res.data.data)
+                        this.setWallet(data)
+                        this.assetsList = data
+                        hideloadings()
+                    }
+                })
             },
             addText(data) {
                 const vdata = data
@@ -214,11 +218,10 @@
         },
         computed: {
             ...mapState({
-                wallet: state => state.user.wallet
+//                wallet: state => state.user.wallet
             })
         },
-        watch: {
-        },
+        watch: {},
         components: {
             Group,
             XHeader,

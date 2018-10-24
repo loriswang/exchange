@@ -1,5 +1,5 @@
 
-const Test = r => require.ensure([], () => r(require('@/modules/user/views/home/test')), 'test')
+// const Test = r => require.ensure([], () => r(require('@/modules/user/views/home/test')), 'test')
 const autologin = r => require.ensure([], () => r(require('@/modules/user/views/home/autologin')), 'autologin')
 const Layout = r => require.ensure([], () => r(require('@/modules/user/views/layout/layout')), 'layout')
 const LoginLayout = r => require.ensure([], () => r(require('@/modules/user/views/layout/loginLayout')), 'loginLayout')
@@ -13,6 +13,8 @@ const Forget = r => require.ensure([], () => r(require('@/modules/user/views/log
 
 const ExchangeIndex = r => require.ensure([], () => r(require('@/modules/exchange/views/exchange/index')), 'user')
 // const TestExchange = r => require.ensure([], () => r(require('@/modules/exchange/views/exchange/components/test/test')), 'testExchange')
+// const Buy = r => require.ensure([], () => r(require('@/modules/exchange/views/exchange/components/ExchangeDrawer/transaction/buy')), 'buy')
+// const Sell = r => require.ensure([], () => r(require('@/modules/exchange/views/exchange/components/ExchangeDrawer/transaction/sell')), 'sell')
 const ExchangeOpenOrder = r => require.ensure([], () => r(require('@/modules/exchange/views/exchange/openorder/index')), 'exchangeOpenOrder')
 const ExchangeHistoryOrder = r => require.ensure([], () => r(require('@/modules/exchange/views/exchange/historyorder/index')), 'exchangeHistoryOrder')
 const ExchangeHistoryOrderShow = r => require.ensure([], () => r(require('@/modules/exchange/views/exchange/historyorder/show/show')), 'exchangeHistoryOrderShow')
@@ -25,14 +27,14 @@ const FinanceIndex = r => require.ensure([], () => r(require('@/modules/exchange
 const FinanceShow = r => require.ensure([], () => r(require('@/modules/exchange/views/finance/show/show')), 'financeShow')
 
 const routes = [
-    {
-        path: '/test',
-        name: 'test',
-        component: Test,
-        meta: {
-            title: 'test'
-        }
-    },
+    // {
+    //     path: '/test',
+    //     name: 'test',
+    //     component: Test,
+    //     meta: {
+    //         title: 'test'
+    //     }
+    // },
     {
         path: '/',
         component: Layout,
@@ -58,17 +60,16 @@ const routes = [
                 component: HomeIndex
             },
             {
-                path: '/exchange',
+                path: 'exchange',
                 name: 'exchangeIndex',
                 meta: {
                     title: '交易',
-                    requiresAuth: false
+                    requiresAuth: true
                 },
-                // redirect: '/exchange/testExchange',
                 component: ExchangeIndex
             },
             {
-                path: 'exchange/openorder',
+                path: '/exchange/openorder',
                 name: 'exchangeOpenOrder',
                 meta: {
                     title: '当前订单',
@@ -77,7 +78,7 @@ const routes = [
                 component: ExchangeOpenOrder
             },
             {
-                path: 'exchange/historyorder',
+                path: '/exchange/openorder/historyorder',
                 name: 'exchangeHistoryOrder',
                 meta: {
                     title: '历史订单',
@@ -86,7 +87,7 @@ const routes = [
                 component: ExchangeHistoryOrder
             },
             {
-                path: 'exchange/historyorder/show',
+                path: '/exchange/historyorder/show',
                 name: 'exchangeHistoryOrderShow',
                 meta: {
                     title: '订单详情',
@@ -218,7 +219,7 @@ const routes = [
             }
         ]
     },
-    {path: '*', component: HomeIndex}
+    {path: '*', component: autologin}
 ]
 
 export default routes

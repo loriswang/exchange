@@ -34,13 +34,16 @@
             <cell title="订单管理" is-link link="/exchange/openorder">
                 <span class="m-user__setting-icon" slot="icon"><i class="mcicon-wendang"></i></span>
             </cell>
-            <cell title="安全中心" is-link link="/user/security">
-                <span class="m-user__setting-icon" slot="icon"><i class="mcicon-anquan"></i></span>
-            </cell>
+            <!--<cell title="安全中心" is-link link="/user/security">-->
+                <!--<span class="m-user__setting-icon" slot="icon"><i class="mcicon-anquan"></i></span>-->
+            <!--</cell>-->
             <cell title="资金划转" is-link link="/account/transfer">
                 <span class="m-user__setting-icon" slot="icon"><i class="mcicon-zhuanzhang"></i></span>
             </cell>
-            <cell title="设置" is-link>
+            <!--<cell title="设置" is-link>-->
+                <!--<span class="m-user__setting-icon" slot="icon"><i class="mcicon-shezhi"></i></span>-->
+            <!--</cell>-->
+            <cell title="测试" @click.native="resetData">
                 <span class="m-user__setting-icon" slot="icon"><i class="mcicon-shezhi"></i></span>
             </cell>
         </group>
@@ -129,7 +132,8 @@
 
 <script>
     import {Group, Cell, trim} from 'vux'
-    import {getUserInfo} from '@/modules/user/api/get_user'
+    import {getUserInfo, ajaxClear} from '@/modules/user/api/get_user'
+    import {showloadings, hideloadings, showToasts} from '@/utils/load.js'
 
     export default {
         name: 'User',
@@ -142,23 +146,19 @@
         created() {
             this.getUserInfoData()
         },
+        beforeRouteEnter(from, to, next) {
+            next(vm => {
+                vm.getUserInfoData()
+            })
+        },
         methods: {
-//            loading提示
-            showloading() {
-                this.$vux.loading.show({
-                    text: '加载中...'
-                })
-            },
-            hideloading() {
-                this.$vux.loading.hide()
-            },
             getUserInfoData() {
-                this.showloading()
+                showloadings()
                 getUserInfo().then(res => {
-                    if (res.status === 200 && res.statusText === 'OK') {
+                    if (res.status === 200) {
                         if (res.data.code === '200') {
                             this.userInfoData = res.data.data
-                            this.hideloading()
+                            hideloadings()
                         }
                     }
                 })
@@ -171,6 +171,29 @@
                 } else {
                     this.userName = this.userInfoData.uuid
                 }
+            },
+            getChanel() {
+                ajaxClear().then(res => {
+                    if (res.status === 200) {
+                        if (res.data.code) {
+                            showToasts('已重置', 'success')
+                            hideloadings()
+                        }
+                    }
+                })
+            },
+            resetData() {
+                const _this = this
+                this.$vux.confirm.show({
+                    title: '操作提示',
+                    content: '确认重置',
+                    onCancel() {
+                    },
+                    onConfirm() {
+                        _this.getChanel()
+                        showloadings()
+                    }
+                })
             }
         },
         watch: {

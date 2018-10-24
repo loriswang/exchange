@@ -1,4 +1,5 @@
 import http from '@/utils/http'
+// import axios from 'axios'
 
 export function getAssets() {
     return http({
@@ -15,6 +16,7 @@ export function getSymbols() {
 // 提交委托
 export function sendMessage(submitData) {
     const data = submitData
+    console.log(data)
     return http({
         url: '/v1/trade/orders',
         method: 'post',
@@ -25,7 +27,6 @@ export function sendMessage(submitData) {
 // 获取委托列表
 export function exchangeList(state) {
     const data = state
-    console.log(`/v1/trade/orders?state=${data}`)
     return http({
         url: `/v1/trade/orders?state=${data}`,
         method: 'get'
@@ -42,13 +43,12 @@ export function exchangeItem(id) {
 
 // 撤销委托
 export function exchangeChanel(id) {
-    const data = {
-        uuid: id
-    }
+    // const data = {
+    //     uuid: id
+    // }
     return http({
-        url: '/v1/trade/orders/cancel',
-        method: 'post',
-        data
+        url: `/v1/trade/orders/${id}/cancel`,
+        method: 'post'
     })
 }
 
@@ -68,6 +68,10 @@ export function getPrice() {
     })
 }
 
-// "fill_fees": "0.000000000000000000",  // 手续费
-// "filled_amount": "0.000000000000000000",  // 填充量
-// "executed_value": "0.000000000000000000", // 成交总量
+// 获取成交时间数组
+export function dealList(id) {
+    return http({
+        url: `/v1/trade/fills?order_uuid=${id}`,
+        method: 'get'
+    })
+}

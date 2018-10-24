@@ -56,9 +56,9 @@
                         </span>
                 </div>
                 <div class="m-exchange__openorder__body-item-3">
-                        <!--<span class="m-exchange__openorder__body-item-action">-->
-                             <!--<x-button mini plain type="primary" @click.native="onItemClick(item.uuid)">撤销</x-button>-->
-                        <!--</span>-->
+                    <span class="m-exchange__openorder__body-item-action">
+                             <x-button mini plain type="primary" @click.native="onItemClick(item.uuid)">撤销</x-button>
+                        </span>
                     <span class="m-exchange__openorder__body-item-name">
                             成交
                         </span>
@@ -67,20 +67,9 @@
                         </span>
                 </div>
             </div>
+            <div class="listNone" v-if="this.exchangeListData.length === 0">暂无订单</div>
             <div class="empty_space"></div>
         </div>
-        <loading v-model="showLoadingInfo"
-                 :text="toastText"
-                 :position="positionLoading">
-        </loading>
-        <toast class="warn-toast"
-               v-model="showPositionValue"
-               type="text"
-               :time="loadTime"
-               is-show-mask
-               :text="toastText"
-               :position="position">
-        </toast>
     </div>
 </template>
 
@@ -309,6 +298,10 @@
                     border: 1px solid array-get($m--state-colors, danger, base) !important;
                 }
             }
+            .listNone {
+                text-align: center;
+                padding: 1rem 0;
+            }
             .empty_space {
                 height: 6rem;
             }
@@ -330,21 +323,13 @@
     import {Confirm, Loading, XButton, Toast} from 'vux'
     import {Decimal} from 'decimal.js'
     import {exchangeList, exchangeChanel} from '@/modules/exchange/api/get_exchange'
-    //    const uid = '56d988b0-1ff8-4542-b08a-f5b86c32ee76'
-    const submit = '已撤销'
-    const unsubmit = '撤销失败'
+    import {showloadings, hideloadings, showToasts, submit, unsubmit} from '@/utils/load'
 
     export default {
         name: 'open-orders',
         data() {
             return {
                 buy: 'buy',
-                showPositionValue: false, // 是否显示提示
-                position: 'middle', // 提示信息的位置
-                positionLoading: 'absolute', // 提示信息的位置
-                toastText: '', // 提示文本
-                loadTime: 3000, // 加载时间
-                showLoadingInfo: false,
                 exchangeListData: [],
                 resetList: false,    // 列表是否需要刷新,true刷新,false不刷新
                 state: 'open'
@@ -361,25 +346,51 @@
             this.resetList = this.submited
         },
         methods: {
-            showPosition: function (info, timer) {
-                this.showPositionValue = true
-                this.toastText = info
-                this.loadTime = timer
-            },
+//            获取委托列表数据
             getExchangeList(state) {
-                console.log(state)
+                showloadings()
                 exchangeList(state).then(res => {
-                    if (res.status === 200 && res.statusText === 'OK') {
+                    if (res.status === 200) {
                         const data = res.data
                         if (data.code === '200') {
                             this.exchangeListData = data.data
+                            hideloadings()
                         }
                     }
                 })
             },
-            onItemClick(id) {
-                this.showPlugin(id)
+//            撤销api,成功刷新列表, 失败提示用户
+            getChanel(uid) {
+                exchangeChanel(uid)
+                    .then(res => {
+                        if (res.status === 200) {
+                            const data = res.data
+                            console.log(data)
+                            if (data.code === '200') {
+//                        关闭loading
+                                hideloadings()
+                                showToasts(submit, 'success')
+                                this.$emit('submiting', event || window.event)
+                            } else {
+//                        关闭loading
+                                hideloadings()
+                                showToasts(unsubmit, 'warn')
+                            }
+                        } else {
+//                        关闭loading
+                            hideloadings()
+                            showToasts(unsubmit, 'warn')
+                        }
+                    })
+                    .catch(err => {
+                        console.log(err)
+//                        err()
+//                        关闭loading
+//                        hideloading(_this)
+//                        showToast(_this, err.response.status, 'warn')
+                    })
             },
+//            弹出撤销提示
             showPlugin(id) {
                 const _this = this
                 this.$vux.confirm.show({
@@ -389,24 +400,13 @@
                     },
                     onConfirm() {
                         _this.getChanel(id)
-                        // 弹出loading
-                        _this.showLoadingInfo = true
-                        _this.toastText = '加载中...'
+                        showloadings()
                     }
                 })
             },
-            getChanel(uid) {
-                exchangeChanel(uid).then(res => {
-                    if (res.status === 200 && res.statusText === 'OK') {
-                        const data = res.data
-                        this.showLoadingInfo = false
-                        this.showPosition(submit, 2000)
-                        console.log(data)
-                    } else {
-                        this.showLoadingInfo = false
-                        this.showPosition(unsubmit, 2000)
-                    }
-                })
+//            点击撤销委托按钮
+            onItemClick(id) {
+                this.showPlugin(id)
             }
         },
         filters: {
@@ -428,7 +428,7 @@
                 if (this.resetList) {
                     this.getExchangeList(this.state)
                     this.$emit('reset', event)
-                    this.resetList = !this.resetList
+//                    this.resetList = false
                 }
             }
         },

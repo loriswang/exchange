@@ -2,14 +2,14 @@
     <!--交易 -> 当前委托(全部) -> 当前订单-->
     <div class="">
         <x-header title="当前订单" :left-options="{backText: ''}">
-            <a @click="linkToHistoryOrder()"
-               class="m-exchange__openorder__nav-link m-exchange__openorder__nav-link--icon" slot="right">
+            <router-link to="openorder/historyorder"
+                         class="m-exchange__openorder__nav-link m-exchange__openorder__nav-link--icon"
+                         slot="right">
                 <i class="mcicon-form"></i>
                 <span class="">历史订单</span>
-            </a>
+            </router-link>
         </x-header>
-
-        <open-orders class="m--marginless"></open-orders>
+        <open-orders class="m--marginless" :submited="this.submited" @reset="resetSubmited" @submiting="refreshing"></open-orders>
     </div>
 </template>
 
@@ -32,17 +32,25 @@
         name: 'openorders',
         data() {
             return {
-                imgList: []
+                imgList: [],
+                submited: false
             }
+        },
+        beforeRouteEnter(from, to, next) {
+            next(vm => {
+                vm.submited = true
+            })
         },
         created() {
         },
         methods: {
-            linkToHistoryOrder() {
-                this.$router.push({path: '/exchange/historyorder'})
+            resetSubmited() {
+                this.submited = false
+            },
+            refreshing() {
+                this.submited = true
             }
         },
-
         components: {
             Group,
             XHeader,

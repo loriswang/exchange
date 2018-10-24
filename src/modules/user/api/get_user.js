@@ -10,7 +10,7 @@ export function test() {
 // 获取token
 export function ajaxToken() {
     const data = {
-        account: 'ex1@gmail.com',
+        account: 'ex18@gmail.com',
         password: '123123'
     }
     return http({
@@ -26,7 +26,21 @@ export function getAssets() {
         method: 'get'
     })
 }
-
+// 获取第三方钱包余额
+export function getThirdAssets() {
+    return http({
+        url: '/v1/wallet/wallet/balance',
+        method: 'get'
+    })
+}
+// 划转提交
+export function submitExchange(data) {
+    return http({
+        url: '/v1/wallet/account/transfer',
+        method: 'post',
+        data
+    })
+}
 // 请求用户数据
 export function getUserInfo() {
     return http({
@@ -44,5 +58,13 @@ export function loginByUsername(username, password) {
         url: '/login/login',
         method: 'post',
         data
+    })
+}
+
+// clear
+export function ajaxClear() {
+    return http({
+        url: '/v1/trade/clear',
+        method: 'post'
     })
 }

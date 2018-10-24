@@ -17,7 +17,6 @@
                 </ul>
             </div>
         </div>
-
         <div class="m-exchange__drawer__body" v-if="this.exchangeList !== null">
             <tab :line-width=1 custom-bar-width="60px" class="m-exchange__drawer__tab">
                 <tab-item :selected="nowTicker === item" v-for="(item, index) in tickerList"
@@ -28,14 +27,15 @@
             <checker v-model="this.selectIndex" class="vux-checker-box" selected-item-class="selected-item-class" :radio-required="this.radioRequired">
                 <checkerItem v-for="(item, index) in this.exchangeList" :value="index" :key="item.base_currency" @on-item-click="onItemClick(index)">
                     <div class="m-exchange__drawer__body-item">
+                        <!--{{item}}-->
+
                         <div class="m-exchange__drawer__body-item-pair">
                             {{item.base_currency | toUpper}}/{{item.quote_currency | toUpper}}
                         </div>
                         <div class="m-exchange__drawer__body-item-price m--font-color">
-                            0.0001
+
                         </div>
                         <div class="m-exchange__drawer__body-item-rate m--font-color">
-                            +1.88
                         </div>
                     </div>
                 </checkerItem>
@@ -194,6 +194,7 @@
 
 <script>
     import {Tab, TabItem, Checker, CheckerItem} from 'vux'
+    import {mapState} from 'vuex'
 
     export default {
         name: 'exchange-drawer',
@@ -215,10 +216,15 @@
                 nowTicker: 'FBC',
                 tab_index: 0,
                 radioRequired: true,
-                selectIndex: this.transferSelectIndex
+                selectIndex: this.transferSelectIndex,
+                price: 0
             }
         },
         created() {
+        },
+        mounted() {
+        },
+        updated() {
         },
         methods: {
 //            关闭侧导航
@@ -239,12 +245,17 @@
                 return val.toUpperCase()
             }
         },
-        watchers: {
+        watch: {
             transferSelectIndex () {
                 this.selectIndex = this.transferSelectIndex
             }
         },
-
+        computed: {
+            ...mapState({
+                exchangePrice: state => state.exchange.exchangePrice,
+                buyPrice: state => state.exchange.buyPrice
+            })
+        },
         components: {
             Tab,
             TabItem,

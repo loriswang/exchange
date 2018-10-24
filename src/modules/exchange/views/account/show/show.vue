@@ -19,7 +19,7 @@
                         总额
                     </div>
                     <div class="m-accountshow__detail__body-item-r">
-                        {{this.item.available}}
+                        {{this.item.balance}}
                     </div>
                 </div>
                 <div class="m-accountshow__detail__body-item">
@@ -27,7 +27,7 @@
                         可用余额
                     </div>
                     <div class="m-accountshow__detail__body-item-r">
-                        {{this.item.balance}}
+                        {{this.item.available}}
                     </div>
                 </div>
                 <div class="m-accountshow__detail__body-item">
@@ -45,7 +45,7 @@
                         固值(BTC)
                     </div>
                     <div class="m-accountshow__detail__footer-item-r">
-                        0.0022331
+                        0
                     </div>
                 </div>
                 <div class="m-accountshow__detail__footer-item">
@@ -53,7 +53,7 @@
                         固值(CNY)
                     </div>
                     <div class="m-accountshow__detail__footer-item-r">
-                        110
+                        0
                     </div>
                 </div>
             </div>
@@ -61,8 +61,13 @@
 
         <div class="m-accountshow__action">
             <div class="m-accountshow__action__r">
-                <x-button class="btn_base btn_primary" link="/account/show/deposit">充币
+                <x-button class="btn_base button-default-disabled-bg-color"
+                          link="/account/transfer">划转
                 </x-button>
+                <!--<x-button class="btn_base button-default-disabled-bg-color" :disabled="true"-->
+                          <!--link="/account/show/deposit">划转-->
+                <!--</x-button>-->
+                <!--<x-button class="btn_base btn_primary" disabled="true" link="/account/show/deposit">充币</x-button>-->
             </div>
             <!--<div class="m-accountshow__action__r">-->
             <!--<x-button class="btn_base btn_danger" link="/account/show/withdraw">提币-->
@@ -183,30 +188,38 @@
 
 <script>
     import {XHeader, Group, Cell, XButton} from 'vux'
+    import {mapState} from 'vuex'
 
     export default {
         name: 'User',
         data() {
             return {
-                imgList: [],
                 item: null
             }
         },
         created() {
-            this.setProps()
+            this.ready()
+        },
+        mounted() {
+            if (this.showWallet) {
+                this.ready()
+            }
         },
         methods: {
-            setProps() {
-                this.item = this.$route.query.item
+            ready() {
+                this.item = this.showWallet
             }
         },
         watch: {
-            '$route' (to, from) {
-                console.log(this.$route.query.item)
-                this.setProps()
+            showWallet() {
+                this.ready()
             }
         },
-
+        computed: {
+            ...mapState({
+                showWallet: state => state.user.showWallet
+            })
+        },
         components: {
             Group,
             XHeader,
