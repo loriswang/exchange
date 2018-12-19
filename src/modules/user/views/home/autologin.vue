@@ -23,7 +23,6 @@
             }
         },
         created() {
-//            this.indexOfToken()
         },
         beforeRouteEnter: function (to, from, next) {
             next(vm => {
@@ -69,7 +68,10 @@
                 this.token = parseURl(adrs)[0].token
                 if (this.token) {
                     this.saveCookie(tokens, this.token)
-                    this.ajaxWallet()
+//                    查看cookie是否保存在session中
+                    if (this.getCookie(tokens)) {
+                        this.ajaxWallet()
+                    }
                 } else {
                     this.showText = '未查找到token!'
                 }
@@ -78,6 +80,10 @@
             saveCookie(key, val) {
 //                const timer = (time + nowTimer) / 1000 / 3600 / 24
                 cookie.set(key, val)
+            },
+//            获取cookie
+            getCookie(key) {
+                return cookie.get(key)
             },
             saveVuex(func, val) {
                 func(val)

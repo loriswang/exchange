@@ -6,6 +6,7 @@ import router from './router'
 import store from './store'
 import i18n from './lang'
 import App from './App'
+// import axios from 'axios'
 
 import { ConfirmPlugin, LoadingPlugin, ToastPlugin } from 'vux'
 /* eslint-disable import/first */
@@ -20,6 +21,9 @@ Vue.use(ConfirmPlugin)
 Vue.use({
     i18n: (key, value) => i18n.t(key, value)
 })
+
+// axios.defaults.retry = 4
+// axios.defaults.retryDelay = 1000
 
 if ('ontouchstart' in window) {
     FastClick.attach(document.body)

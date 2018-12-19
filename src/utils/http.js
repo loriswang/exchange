@@ -87,51 +87,9 @@ instance.interceptors.response.use(
         //             })
         //     }
         // }
-        // if (error && error.response) {
-        //     switch (error.response.status) {
-        //     case 400:
-        //         console.log('请求错误')
-        //         break
-        //     case 401:
-        //         console.log('未授权，请重新登录')
-        //         break
-        //     case 403:
-        //         console.log('拒绝访问')
-        //         break
-        //     case 404:
-        //         console.log('请求错误,未找到该资源')
-        //         break
-        //     case 405:
-        //         console.log('请求方法未允许')
-        //         break
-        //     case 408:
-        //         console.log('请求超时')
-        //         break
-        //     case 500:
-        //         console.log('服务器端出错')
-        //         break
-        //     case 501:
-        //         console.log('网络未实现')
-        //         break
-        //     case 502:
-        //         console.log('网络错误')
-        //         break
-        //     case 503:
-        //         console.log('服务不可用')
-        //         break
-        //     case 504:
-        //         console.log('网络超时')
-        //         break
-        //     case 505:
-        //         console.log('http版本不支持该请求')
-        //         break
-        //     default:
-        //         console.log(`连接错误${error.response.status}`)
-        //     }
-        // } else {
-        //     console.log('连接到服务器失败')
-        // }
+        console.log(error.response)
         const errData = error.response.data
+        console.log(errData.code)
         if (errData.code === 500) {
             errToast(errData.error_code)
         } else if (errData.code === 400) {
@@ -144,6 +102,36 @@ instance.interceptors.response.use(
         // 当响应异常时做一些处理
         return Promise.reject(error)
     }
+    // function axiosRetryInterceptor(err) {
+    //     console.log('timeout')
+    //     var config = err.config
+    //     // If config does not exist or the retry option is not set, reject
+    //     if (!config || !config.retry) return Promise.reject(err)
+    //
+    //     // Set the variable for keeping track of the retry count
+    //     config.__retryCount = config.__retryCount || 0
+    //
+    //     // Check if we've maxed out the total number of retries
+    //     if (config.__retryCount >= config.retry) {
+    //         // Reject with the error
+    //         return Promise.reject(err)
+    //     }
+    //
+    //     // Increase the retry count
+    //     config.__retryCount += 1
+    //
+    //     // Create new promise to handle exponential backoff
+    //     var backoff = new Promise(function (resolve) {
+    //         setTimeout(function () {
+    //             resolve()
+    //         }, config.retryDelay || 1)
+    //     })
+    //
+    //     // Return the promise in which recalls axios to retry the request
+    //     return backoff.then(function () {
+    //         return axios(config)
+    //     })
+    // }
 )
 
 // 对axios的实例重新封装成一个plugin ,方便 Vue.use(xxxx)
